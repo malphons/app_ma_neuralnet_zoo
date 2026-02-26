@@ -1,0 +1,46 @@
+{
+    "schema_version": "1.0",
+    "base_url_pattern": "https://malphons.github.io/{repo_name}",
+    "architectures": [
+        {
+            "id": "perceptron",
+            "repo_name": "nn-zoo-perceptron",
+            "enabled": true
+        },
+        {
+            "id": "cnn",
+            "repo_name": "nn-zoo-cnn",
+            "enabled": true
+        },
+        {
+            "id": "rnn",
+            "repo_name": "nn-zoo-rnn",
+            "enabled": true
+        },
+        {
+            "id": "lstm",
+            "repo_name": "nn-zoo-lstm",
+            "enabled": true
+        },
+        {
+            "id": "autoencoder",
+            "repo_name": "nn-zoo-autoencoder",
+            "enabled": true
+        },
+        {
+            "id": "gan",
+            "repo_name": "nn-zoo-gan",
+            "enabled": true
+        },
+        {
+            "id": "transformer",
+            "repo_name": "nn-zoo-transformer",
+            "enabled": true
+        },
+        {
+            "id": "resnet",
+            "repo_name": "nn-zoo-resnet",
+            "enabled": true
+        }
+    ]
+}

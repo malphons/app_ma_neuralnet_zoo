@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perceptron / MLP - Neural Network Zoo</title>
+    <meta name="description" content="Interactive deep-dive into the Perceptron and Multi-Layer Perceptron (MLP) neural network architecture. Explore layers, math, and code.">
+
+    <!-- Shared theme from hub -->
+    <link rel="stylesheet" href="https://malphons.github.io/xProject_NNZoo/css/zoo.css">
+    <link rel="stylesheet" href="css/architecture.css">
+
+    <!-- D3.js v7 -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+
+    <!-- KaTeX for equations -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+</head>
+<body class="arch-page">
+
+    <!-- Header -->
+    <header class="arch-header">
+        <div class="arch-header__inner">
+            <a href="https://malphons.github.io/xProject_NNZoo/" class="arch-header__back">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"/>
+                    <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Back to Zoo
+            </a>
+            <span class="arch-header__title">Perceptron / MLP</span>
+            <div class="arch-header__actions">
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="theme-toggle__sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <svg class="theme-toggle__moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Interactive Diagram -->
+    <section class="arch-diagram">
+        <div class="arch-diagram__canvas" id="diagram-container"></div>
+        <div class="arch-diagram__controls">
+            <button class="arch-diagram__btn" id="btn-animate" title="Animate data flow">&#9654; Animate</button>
+            <button class="arch-diagram__btn" id="btn-reset" title="Reset zoom">Reset</button>
+        </div>
+    </section>
+
+    <!-- Content Tabs -->
+    <section class="arch-tabs">
+        <nav class="arch-tabs__nav">
+            <button class="arch-tab-btn arch-tab-btn--active" data-tab="overview">Overview</button>
+            <button class="arch-tab-btn" data-tab="architecture">Architecture</button>
+            <button class="arch-tab-btn" data-tab="math">Math</button>
+            <button class="arch-tab-btn" data-tab="code">Code</button>
+            <button class="arch-tab-btn" data-tab="papers">Papers</button>
+        </nav>
+
+        <!-- Overview Tab -->
+        <div class="arch-tab-content arch-tab-content--active" id="tab-overview">
+            <h2>Overview</h2>
+            <p>The <strong>Perceptron</strong> is the simplest form of a neural network, originally proposed by Frank Rosenblatt in 1958. It consists of a single layer of weights connecting inputs directly to outputs. While limited to linearly separable problems, it introduced the fundamental concepts of learnable weights and threshold activation.</p>
+            <p>The <strong>Multi-Layer Perceptron (MLP)</strong> extends this by stacking multiple fully-connected layers with non-linear activations, forming a universal function approximator. Trained via backpropagation (popularized by Rumelhart, Hinton, and Williams in 1986), the MLP became the foundation of modern deep learning.</p>
+
+            <h3>Key Innovation</h3>
+            <p>The combination of multiple layers with non-linear activation functions allows MLPs to learn complex, non-linear decision boundaries. The backpropagation algorithm enables efficient gradient computation through all layers, making training practical.</p>
+
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li><strong>Classification</strong> &mdash; binary and multi-class classification tasks</li>
+                <li><strong>Regression</strong> &mdash; continuous value prediction</li>
+                <li><strong>Function approximation</strong> &mdash; learning arbitrary input-output mappings</li>
+                <li><strong>Feature learning</strong> &mdash; hidden layers learn useful intermediate representations</li>
+                <li><strong>Tabular data</strong> &mdash; structured data with fixed-size feature vectors</li>
+            </ul>
+
+            <h3>Limitations</h3>
+            <ul>
+                <li>No parameter sharing &mdash; every connection has its own weight (scales poorly to high-dimensional inputs)</li>
+                <li>No spatial or temporal structure awareness (unlike CNNs or RNNs)</li>
+                <li>Prone to overfitting without regularization on complex datasets</li>
+                <li>All inputs must be fixed-length vectors</li>
+            </ul>
+        </div>
+
+        <!-- Architecture Tab -->
+        <div class="arch-tab-content" id="tab-architecture">
+            <h2>Layer-by-Layer Breakdown</h2>
+            <p>Click on any layer in the diagram above to highlight its description below. Hover over individual nodes to see connection details.</p>
+
+            <div class="arch-layer-card" data-layer="input">
+                <div class="arch-layer-card__name">Input Layer</div>
+                <div class="arch-layer-card__detail">Shape: [batch_size, n_features]</div>
+                <p>The input layer receives raw feature vectors. Each neuron represents one feature of the input data. No learnable parameters &mdash; this layer simply passes data to the first hidden layer.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="hidden1">
+                <div class="arch-layer-card__name">Hidden Layer 1 (Dense + ReLU)</div>
+                <div class="arch-layer-card__detail">Shape: [batch_size, hidden_units] &middot; Params: n_features &times; hidden_units + hidden_units</div>
+                <p>The first hidden layer applies a linear transformation (weight matrix multiplication + bias) followed by a ReLU activation function. This introduces non-linearity, allowing the network to learn features beyond linear combinations of the input.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="hidden2">
+                <div class="arch-layer-card__name">Hidden Layer 2 (Dense + ReLU)</div>
+                <div class="arch-layer-card__detail">Shape: [batch_size, hidden_units] &middot; Params: hidden_units<sup>2</sup> + hidden_units</div>
+                <p>A second hidden layer enables the network to compose higher-level features from the representations learned in the first hidden layer. Deeper networks can represent increasingly abstract features.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="pre-output">
+                <div class="arch-layer-card__name">Pre-Output Layer (Dense + ReLU)</div>
+                <div class="arch-layer-card__detail">Shape: [batch_size, pre_output_units]</div>
+                <p>An additional layer that narrows the representation before the final output. This bottleneck forces the network to compress information into a smaller representation.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="output">
+                <div class="arch-layer-card__name">Output Layer (Dense + Sigmoid/Softmax)</div>
+                <div class="arch-layer-card__detail">Shape: [batch_size, n_classes]</div>
+                <p>The final layer produces the network's prediction. For binary classification, a single output with sigmoid activation gives a probability. For multi-class, softmax normalizes outputs into a probability distribution. For regression, no activation is used (linear output).</p>
+            </div>
+        </div>
+
+        <!-- Math Tab -->
+        <div class="arch-tab-content" id="tab-math">
+            <h2>Key Equations</h2>
+
+            <h3>Single Neuron (Perceptron)</h3>
+            <div class="arch-equation">
+                $$y = \sigma\left(\sum_{i=1}^{n} w_i x_i + b\right) = \sigma(\mathbf{w}^T \mathbf{x} + b)$$
+            </div>
+            <p>Each neuron computes a weighted sum of its inputs plus a bias term, then applies an activation function &sigma;.</p>
+
+            <h3>Forward Pass (Layer l)</h3>
+            <div class="arch-equation">
+                $$\mathbf{z}^{[l]} = \mathbf{W}^{[l]} \mathbf{a}^{[l-1]} + \mathbf{b}^{[l]}$$
+                $$\mathbf{a}^{[l]} = g(\mathbf{z}^{[l]})$$
+            </div>
+            <p>Where <strong>W</strong> is the weight matrix, <strong>a</strong> is the activation vector, <strong>b</strong> is the bias, and <strong>g</strong> is the activation function (ReLU, sigmoid, etc.).</p>
+
+            <h3>ReLU Activation</h3>
+            <div class="arch-equation">
+                $$\text{ReLU}(z) = \max(0, z)$$
+            </div>
+
+            <h3>Cross-Entropy Loss (Classification)</h3>
+            <div class="arch-equation">
+                $$\mathcal{L} = -\frac{1}{N}\sum_{i=1}^{N}\left[y_i \log(\hat{y}_i) + (1 - y_i)\log(1 - \hat{y}_i)\right]$$
+            </div>
+
+            <h3>Backpropagation (Weight Update)</h3>
+            <div class="arch-equation">
+                $$\mathbf{W}^{[l]} \leftarrow \mathbf{W}^{[l]} - \alpha \frac{\partial \mathcal{L}}{\partial \mathbf{W}^{[l]}}$$
+            </div>
+            <p>Gradients flow backward through the chain rule. The learning rate &alpha; controls the step size.</p>
+        </div>
+
+        <!-- Code Tab -->
+        <div class="arch-tab-content" id="tab-code">
+            <h2>Implementation</h2>
+
+            <h3>PyTorch</h3>
+            <pre><code>import torch
+import torch.nn as nn
+
+class MLP(nn.Module):
+    def __init__(self, input_dim, hidden_dim, output_dim):
+        super().__init__()
+        self.layers = nn.Sequential(
+            nn.Linear(input_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim // 2),
+            nn.ReLU(),
+            nn.Linear(hidden_dim // 2, output_dim),
+        )
+
+    def forward(self, x):
+        return self.layers(x)
+
+# Example usage
+model = MLP(input_dim=3, hidden_dim=4, output_dim=1)
+x = torch.randn(32, 3)  # batch of 32, 3 features
+output = model(x)        # shape: [32, 1]</code></pre>
+
+            <h3>TensorFlow / Keras</h3>
+            <pre><code>import tensorflow as tf
+from tensorflow import keras
+
+model = keras.Sequential([
+    keras.layers.Dense(4, activation='relu', input_shape=(3,)),
+    keras.layers.Dense(4, activation='relu'),
+    keras.layers.Dense(2, activation='relu'),
+    keras.layers.Dense(1, activation='sigmoid'),
+])
+
+model.compile(
+    optimizer='adam',
+    loss='binary_crossentropy',
+    metrics=['accuracy']
+)
+
+# model.summary() to see parameter counts</code></pre>
+
+            <h3>NumPy (From Scratch)</h3>
+            <pre><code>import numpy as np
+
+def relu(z):
+    return np.maximum(0, z)
+
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+class SimpleMLP:
+    def __init__(self, layer_sizes):
+        self.weights = []
+        self.biases = []
+        for i in range(len(layer_sizes) - 1):
+            w = np.random.randn(layer_sizes[i], layer_sizes[i+1]) * 0.01
+            b = np.zeros((1, layer_sizes[i+1]))
+            self.weights.append(w)
+            self.biases.append(b)
+
+    def forward(self, x):
+        a = x
+        for i, (w, b) in enumerate(zip(self.weights, self.biases)):
+            z = a @ w + b
+            a = sigmoid(z) if i == len(self.weights)-1 else relu(z)
+        return a
+
+mlp = SimpleMLP([3, 4, 4, 2, 1])
+out = mlp.forward(np.random.randn(1, 3))</code></pre>
+        </div>
+
+        <!-- Papers Tab -->
+        <div class="arch-tab-content" id="tab-papers">
+            <h2>Key Papers</h2>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title">
+                        <a href="https://doi.org/10.1037/h0042519" target="_blank" rel="noopener">The Perceptron: A Probabilistic Model for Information Storage and Organization in the Brain</a>
+                    </div>
+                    <div class="arch-paper__authors">Frank Rosenblatt, 1958 &mdash; The original perceptron paper</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title">
+                        <a href="https://doi.org/10.1038/323533a0" target="_blank" rel="noopener">Learning representations by back-propagating errors</a>
+                    </div>
+                    <div class="arch-paper__authors">Rumelhart, Hinton & Williams, 1986 &mdash; Backpropagation for training multi-layer networks</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title">
+                        <a href="http://www.cs.toronto.edu/~hinton/absps/NatureDeepReview.pdf" target="_blank" rel="noopener">Deep Learning</a>
+                    </div>
+                    <div class="arch-paper__authors">LeCun, Bengio & Hinton, 2015 &mdash; Comprehensive review of deep learning foundations</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title">
+                        <a href="https://www.cs.cmu.edu/~epxing/Class/10315/reading/Cybenko.pdf" target="_blank" rel="noopener">Approximation by Superpositions of a Sigmoidal Function</a>
+                    </div>
+                    <div class="arch-paper__authors">Cybenko, 1989 &mdash; Universal approximation theorem for neural networks</div>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 2rem;">Related Architectures</h2>
+            <p>The MLP is the foundation upon which these architectures build:</p>
+            <ul>
+                <li><strong>CNN</strong> &mdash; Replaces dense layers with convolutional layers for spatial data</li>
+                <li><strong>Autoencoder</strong> &mdash; MLP trained to reconstruct its input through a bottleneck</li>
+                <li><strong>ResNet</strong> &mdash; Adds skip connections to enable much deeper networks</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="arch-footer">
+        <a href="https://malphons.github.io/xProject_NNZoo/">&#8592; Back to Neural Network Zoo</a>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/diagram.js"></script>
+    <script>
+        // Theme toggle
+        (function() {
+            var html = document.documentElement;
+            var toggleBtn = document.querySelector('.theme-toggle');
+            var saved = localStorage.getItem('nnzoo_theme');
+            if (saved) {
+                html.setAttribute('data-theme', saved);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                html.setAttribute('data-theme', 'light');
+            }
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    var current = html.getAttribute('data-theme') || 'dark';
+                    var next = current === 'dark' ? 'light' : 'dark';
+                    html.setAttribute('data-theme', next);
+                    localStorage.setItem('nnzoo_theme', next);
+                });
+            }
+        })();
+
+        // Tab switching
+        (function() {
+            var tabs = document.querySelectorAll('.arch-tab-btn');
+            tabs.forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(function(t) { t.classList.remove('arch-tab-btn--active'); });
+                    tab.classList.add('arch-tab-btn--active');
+                    document.querySelectorAll('.arch-tab-content').forEach(function(c) {
+                        c.classList.remove('arch-tab-content--active');
+                    });
+                    var target = document.getElementById('tab-' + tab.getAttribute('data-tab'));
+                    if (target) target.classList.add('arch-tab-content--active');
+                });
+            });
+        })();
+
+        // Initialize diagram
+        NNZoo.diagram.init('#diagram-container');
+
+        // Diagram controls
+        document.getElementById('btn-animate').addEventListener('click', function() {
+            NNZoo.diagram.animateDataFlow();
+        });
+        document.getElementById('btn-reset').addEventListener('click', function() {
+            NNZoo.diagram.resetZoom();
+        });
+
+        // KaTeX auto-render
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ]
+                });
+            }
+        });
+    </script>
+</body>
+</html>

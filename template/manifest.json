@@ -1,0 +1,18 @@
+{
+    "schema_version": "1.0",
+    "id": "ARCHITECTURE_ID",
+    "name": "Architecture Name",
+    "short_description": "Brief one-line description of the architecture.",
+    "category": "foundational",
+    "tags": ["tag1", "tag2", "tag3"],
+    "year_introduced": 2000,
+    "key_paper": "Author et al., 'Paper Title'",
+    "paper_url": "https://arxiv.org/abs/XXXX.XXXXX",
+    "complexity": "intermediate",
+    "color_accent": "#8b949e",
+    "use_cases": ["use case 1", "use case 2"],
+    "layer_types": ["input", "hidden", "output"],
+    "related_architectures": [],
+    "interactive_features": ["layer-toggle", "data-flow"],
+    "last_updated": "2026-02-26"
+}

@@ -1,0 +1,256 @@
+/* Neural Network Zoo - Core Theme */
+/* Dark/Light toggle via data-theme attribute on <html> */
+
+/* ===== Dark Theme (default) ===== */
+:root,
+:root[data-theme="dark"] {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-card: #1c2128;
+    --bg-card-hover: #242a33;
+    --bg-input: #0d1117;
+
+    --border: #30363d;
+    --border-hover: #484f58;
+
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --text-muted: #656d76;
+
+    --accent: #58a6ff;
+    --accent-dim: #1f6feb;
+    --accent-subtle: rgba(56, 139, 253, 0.15);
+    --success: #3fb950;
+    --warning: #d29922;
+    --danger: #f85149;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+    --theme-icon-sun: none;
+    --theme-icon-moon: block;
+}
+
+/* ===== Light Theme ===== */
+:root[data-theme="light"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f6f8fa;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f6f8fa;
+    --bg-input: #f6f8fa;
+
+    --border: #d0d7de;
+    --border-hover: #afb8c1;
+
+    --text-primary: #1f2328;
+    --text-secondary: #656d76;
+    --text-muted: #8b949e;
+
+    --accent: #0969da;
+    --accent-dim: #0550ae;
+    --accent-subtle: rgba(9, 105, 218, 0.1);
+    --success: #1a7f37;
+    --warning: #9a6700;
+    --danger: #cf222e;
+
+    --shadow-sm: 0 1px 2px rgba(31, 35, 40, 0.08);
+    --shadow-md: 0 4px 12px rgba(31, 35, 40, 0.1);
+    --shadow-lg: 0 8px 24px rgba(31, 35, 40, 0.12);
+
+    --theme-icon-sun: block;
+    --theme-icon-moon: none;
+}
+
+/* ===== Category Accent Colors ===== */
+:root {
+    --cat-convolutional: #58a6ff;
+    --cat-recurrent: #3fb950;
+    --cat-attention: #f0883e;
+    --cat-generative: #bc8cff;
+    --cat-autoencoder: #f778ba;
+    --cat-regularization: #d29922;
+    --cat-foundational: #8b949e;
+
+    /* Layout tokens */
+    --card-radius: 12px;
+    --card-gap: 1.25rem;
+    --max-width: 1400px;
+    --header-height: 64px;
+
+    /* Typography */
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --font-mono: 'Consolas', 'SFMono-Regular', 'Courier New', monospace;
+}
+
+/* ===== Base Reset & Globals ===== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-sans);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* ===== Header ===== */
+.zoo-header {
+    height: var(--header-height);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.zoo-header__inner {
+    max-width: var(--max-width);
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.zoo-header__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--text-primary);
+}
+
+.zoo-header__brand:hover {
+    text-decoration: none;
+}
+
+.zoo-header__logo {
+    width: 32px;
+    height: 32px;
+}
+
+.zoo-header__title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.zoo-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* ===== Theme Toggle ===== */
+.theme-toggle {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.4rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+}
+
+.theme-toggle:hover {
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+    background: var(--bg-card);
+}
+
+.theme-toggle__sun {
+    display: var(--theme-icon-sun);
+}
+
+.theme-toggle__moon {
+    display: var(--theme-icon-moon);
+}
+
+/* ===== GitHub Link ===== */
+.github-link {
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.github-link:hover {
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+/* ===== Loading Skeleton ===== */
+.skeleton {
+    background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-card-hover) 50%, var(--bg-card) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+    border-radius: var(--card-radius);
+}
+
+@keyframes skeleton-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ===== Status Bar ===== */
+.zoo-status {
+    text-align: center;
+    padding: 0.5rem 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* ===== Footer ===== */
+.zoo-footer {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 2rem;
+}
+
+.zoo-footer a {
+    color: var(--text-secondary);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .zoo-header {
+        padding: 0 1rem;
+    }
+
+    .zoo-header__title {
+        font-size: 1rem;
+    }
+}

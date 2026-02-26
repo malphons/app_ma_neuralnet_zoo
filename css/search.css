@@ -1,0 +1,197 @@
+/* Neural Network Zoo - Search & Filter Components */
+
+/* ===== Search Section ===== */
+.zoo-search {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 1rem;
+}
+
+/* ===== Search Bar ===== */
+.zoo-search__bar {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.zoo-search__icon {
+    position: absolute;
+    left: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+    width: 18px;
+    height: 18px;
+}
+
+.zoo-search__input {
+    width: 100%;
+    padding: 0.65rem 1rem 0.65rem 2.5rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-family: var(--font-sans);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.3s;
+}
+
+.zoo-search__input::placeholder {
+    color: var(--text-muted);
+}
+
+.zoo-search__input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+
+/* ===== Filter Pills ===== */
+.zoo-filters {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.zoo-filters__label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-right: 0.25rem;
+    white-space: nowrap;
+}
+
+.zoo-filter-pill {
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-family: var(--font-sans);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.zoo-filter-pill:hover {
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+    background: var(--bg-card);
+}
+
+.zoo-filter-pill--active {
+    background: var(--accent-subtle);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.zoo-filter-pill--active:hover {
+    background: var(--accent-subtle);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Category-specific active colors */
+.zoo-filter-pill--convolutional.zoo-filter-pill--active {
+    background: rgba(88, 166, 255, 0.15);
+    border-color: var(--cat-convolutional);
+    color: var(--cat-convolutional);
+}
+
+.zoo-filter-pill--recurrent.zoo-filter-pill--active {
+    background: rgba(63, 185, 80, 0.15);
+    border-color: var(--cat-recurrent);
+    color: var(--cat-recurrent);
+}
+
+.zoo-filter-pill--attention.zoo-filter-pill--active {
+    background: rgba(240, 136, 62, 0.15);
+    border-color: var(--cat-attention);
+    color: var(--cat-attention);
+}
+
+.zoo-filter-pill--generative.zoo-filter-pill--active {
+    background: rgba(188, 140, 255, 0.15);
+    border-color: var(--cat-generative);
+    color: var(--cat-generative);
+}
+
+.zoo-filter-pill--autoencoder.zoo-filter-pill--active {
+    background: rgba(247, 120, 186, 0.15);
+    border-color: var(--cat-autoencoder);
+    color: var(--cat-autoencoder);
+}
+
+.zoo-filter-pill--regularization.zoo-filter-pill--active {
+    background: rgba(210, 153, 34, 0.15);
+    border-color: var(--cat-regularization);
+    color: var(--cat-regularization);
+}
+
+.zoo-filter-pill--foundational.zoo-filter-pill--active {
+    background: rgba(139, 148, 158, 0.15);
+    border-color: var(--cat-foundational);
+    color: var(--cat-foundational);
+}
+
+/* ===== Result Count ===== */
+.zoo-search__results {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0 0;
+}
+
+.zoo-search__count {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.zoo-search__sort {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.zoo-search__sort:hover {
+    border-color: var(--border-hover);
+}
+
+.zoo-search__sort:focus {
+    border-color: var(--accent);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .zoo-search {
+        padding: 1rem 1rem 0.75rem;
+    }
+
+    .zoo-filters {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 0.5rem;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .zoo-filters::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .zoo-search {
+        padding: 0.75rem 0.75rem 0.5rem;
+    }
+}

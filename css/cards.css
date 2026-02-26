@@ -1,0 +1,297 @@
+/* Neural Network Zoo - Card Grid & Card Components */
+
+/* ===== Card Grid ===== */
+.zoo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--card-gap);
+    padding: 0 1.5rem 2rem;
+    max-width: var(--max-width);
+    margin: 0 auto;
+}
+
+/* ===== Card ===== */
+.zoo-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+}
+
+.zoo-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-md);
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ===== Card Thumbnail ===== */
+.zoo-card__thumbnail {
+    height: 200px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+    transition: background-color 0.3s ease;
+}
+
+.zoo-card__thumbnail svg {
+    width: 100%;
+    height: 100%;
+    max-width: 360px;
+    transition: filter 0.3s ease;
+}
+
+/* Hover animation: brighten SVG */
+.zoo-card:hover .zoo-card__thumbnail svg {
+    filter: brightness(1.15);
+}
+
+/* Hover animation: pulse nodes */
+.zoo-card:hover .nn-node {
+    animation: node-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes node-pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* Hover animation: data flow through edges */
+.zoo-card:hover .nn-edge {
+    stroke-dasharray: 8 4;
+    animation: edge-flow 1s linear infinite;
+}
+
+@keyframes edge-flow {
+    to { stroke-dashoffset: -12; }
+}
+
+/* ===== Card Body ===== */
+.zoo-card__body {
+    padding: 1rem 1.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.zoo-card__title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.35rem;
+    line-height: 1.3;
+}
+
+.zoo-card__year {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    font-family: var(--font-mono);
+}
+
+.zoo-card__description {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ===== Card Footer / Tags ===== */
+.zoo-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+    transition: border-color 0.3s ease;
+}
+
+.zoo-card__tag {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    white-space: nowrap;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.zoo-card__category-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+/* Category badge colors */
+.zoo-card__category-badge--convolutional {
+    background: rgba(88, 166, 255, 0.15);
+    color: var(--cat-convolutional);
+}
+
+.zoo-card__category-badge--recurrent {
+    background: rgba(63, 185, 80, 0.15);
+    color: var(--cat-recurrent);
+}
+
+.zoo-card__category-badge--attention {
+    background: rgba(240, 136, 62, 0.15);
+    color: var(--cat-attention);
+}
+
+.zoo-card__category-badge--generative {
+    background: rgba(188, 140, 255, 0.15);
+    color: var(--cat-generative);
+}
+
+.zoo-card__category-badge--autoencoder {
+    background: rgba(247, 120, 186, 0.15);
+    color: var(--cat-autoencoder);
+}
+
+.zoo-card__category-badge--regularization {
+    background: rgba(210, 153, 34, 0.15);
+    color: var(--cat-regularization);
+}
+
+.zoo-card__category-badge--foundational {
+    background: rgba(139, 148, 158, 0.15);
+    color: var(--cat-foundational);
+}
+
+/* ===== Card Complexity Indicator ===== */
+.zoo-card__complexity {
+    margin-left: auto;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.zoo-card__complexity-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+}
+
+.zoo-card__complexity-dot--active {
+    background: var(--accent);
+}
+
+/* ===== Skeleton Card ===== */
+.zoo-card--skeleton .zoo-card__thumbnail {
+    background: var(--bg-card);
+}
+
+.zoo-card--skeleton .skeleton-thumb {
+    width: 80%;
+    height: 60%;
+    border-radius: 8px;
+}
+
+.zoo-card--skeleton .skeleton-title {
+    height: 1.1rem;
+    width: 60%;
+    margin-bottom: 0.5rem;
+}
+
+.zoo-card--skeleton .skeleton-text {
+    height: 0.85rem;
+    width: 90%;
+    margin-bottom: 0.35rem;
+}
+
+.zoo-card--skeleton .skeleton-text:last-child {
+    width: 70%;
+}
+
+/* ===== Empty State ===== */
+.zoo-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+}
+
+.zoo-empty__icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.zoo-empty__title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.zoo-empty__description {
+    font-size: 0.9rem;
+}
+
+/* ===== Coming Soon Card ===== */
+.zoo-card--coming-soon {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.zoo-card--coming-soon:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.zoo-card--coming-soon .zoo-card__thumbnail {
+    position: relative;
+}
+
+.zoo-card--coming-soon .zoo-card__thumbnail::after {
+    content: 'Coming Soon';
+    position: absolute;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .zoo-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+        padding: 0 1rem 1.5rem;
+    }
+
+    .zoo-card__thumbnail {
+        height: 160px;
+    }
+}
+
+@media (max-width: 480px) {
+    .zoo-grid {
+        grid-template-columns: 1fr;
+        padding: 0 0.75rem 1rem;
+    }
+}

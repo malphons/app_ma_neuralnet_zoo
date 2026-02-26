@@ -1,0 +1,18 @@
+{
+    "schema_version": "1.0",
+    "id": "perceptron",
+    "name": "Perceptron / MLP",
+    "short_description": "The foundational feedforward neural network with fully connected layers, forming the basis for deep learning.",
+    "category": "foundational",
+    "tags": ["feedforward", "fully-connected", "classification", "regression", "backpropagation"],
+    "year_introduced": 1958,
+    "key_paper": "Rosenblatt, 'The Perceptron: A Probabilistic Model'",
+    "paper_url": "https://doi.org/10.1037/h0042519",
+    "complexity": "beginner",
+    "color_accent": "#8b949e",
+    "use_cases": ["classification", "regression", "function approximation", "feature learning"],
+    "layer_types": ["input", "dense", "activation", "output"],
+    "related_architectures": ["cnn", "autoencoder", "resnet"],
+    "interactive_features": ["layer-toggle", "data-flow", "weight-visualization"],
+    "last_updated": "2026-02-26"
+}
