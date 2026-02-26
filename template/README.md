@@ -10,7 +10,7 @@ This is a template for creating a new architecture in the Neural Network Zoo.
 4. Customize `index.html` with your architecture content
 5. Build the D3 visualization in `js/diagram.js`
 6. Push to GitHub and enable GitHub Pages (from `main` branch)
-7. Add an entry to `registry.json` in the hub repo (`xProject_NNZoo`)
+7. Add an entry to `registry.json` in the hub repo (`app_ma_neuralnet_zoo`)
 
 ## File Structure
 
@@ -47,7 +47,7 @@ See `manifest.json` for all fields. Required fields:
 
 The page imports the shared theme from the hub:
 ```html
-<link rel="stylesheet" href="https://malphons.github.io/xProject_NNZoo/css/zoo.css">
+<link rel="stylesheet" href="https://malphons.github.io/app_ma_neuralnet_zoo/css/zoo.css">
 ```
 
 For local development, you can copy `zoo.css` or point to a local path.

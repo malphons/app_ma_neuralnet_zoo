@@ -2,7 +2,7 @@
 
 An interactive visual gallery of common neural network architectures, built with GitHub Pages.
 
-**Live site:** [malphons.github.io/xProject_NNZoo](https://malphons.github.io/xProject_NNZoo/)
+**Live site:** [malphons.github.io/app_ma_neuralnet_zoo](https://malphons.github.io/app_ma_neuralnet_zoo/)
 
 ## Architecture
 
@@ -57,7 +57,7 @@ python3 -m http.server 8080
 ## Project Structure
 
 ```
-xProject_NNZoo/
+app_ma_neuralnet_zoo/
   index.html              # Gallery page
   css/                    # Theme, cards, search styles
   js/                     # Registry, gallery, search, app modules
