@@ -4,7 +4,7 @@
 
     const REGISTRY_PATH = 'data/registry.json';
     const FALLBACK_PATH = 'data/fallback-cache.json';
-    const CACHE_KEY = 'nnzoo_manifest_cache';
+    const CACHE_KEY = 'nnzoo_manifest_cache_v2';
     const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
 
     /**
