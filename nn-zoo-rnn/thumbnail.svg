@@ -1,0 +1,58 @@
+<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+  <!-- RNN Thumbnail: 4 nodes in a horizontal chain with recurrence loops -->
+
+  <!-- Horizontal connections between nodes (forward arrows) -->
+  <g class="nn-layer">
+    <line class="nn-edge" x1="90" y1="125" x2="150" y2="125" stroke="#3fb950" stroke-width="1.5" opacity="0.3"/>
+    <polygon points="148,121 156,125 148,129" fill="#3fb950" opacity="0.3"/>
+
+    <line class="nn-edge" x1="190" y1="125" x2="250" y2="125" stroke="#3fb950" stroke-width="1.5" opacity="0.3"/>
+    <polygon points="248,121 256,125 248,129" fill="#3fb950" opacity="0.3"/>
+
+    <line class="nn-edge" x1="290" y1="125" x2="350" y2="125" stroke="#3fb950" stroke-width="1.5" opacity="0.3"/>
+    <polygon points="348,121 356,125 348,129" fill="#3fb950" opacity="0.3"/>
+  </g>
+
+  <!-- Recurrence loop arrows on top of each node -->
+  <g class="nn-layer">
+    <!-- Loop on node 1 -->
+    <path class="nn-edge" d="M 65,110 C 55,75 95,75 85,110" fill="none" stroke="#3fb950" stroke-width="1.2" opacity="0.35"/>
+    <polygon points="83,108 87,115 79,113" fill="#3fb950" opacity="0.35"/>
+
+    <!-- Loop on node 2 -->
+    <path class="nn-edge" d="M 165,110 C 155,75 195,75 185,110" fill="none" stroke="#3fb950" stroke-width="1.2" opacity="0.35"/>
+    <polygon points="183,108 187,115 179,113" fill="#3fb950" opacity="0.35"/>
+
+    <!-- Loop on node 3 -->
+    <path class="nn-edge" d="M 265,110 C 255,75 295,75 285,110" fill="none" stroke="#3fb950" stroke-width="1.2" opacity="0.35"/>
+    <polygon points="283,108 287,115 279,113" fill="#3fb950" opacity="0.35"/>
+
+    <!-- Loop on node 4 -->
+    <path class="nn-edge" d="M 365,110 C 355,75 395,75 385,110" fill="none" stroke="#3fb950" stroke-width="1.2" opacity="0.35"/>
+    <polygon points="383,108 387,115 379,113" fill="#3fb950" opacity="0.35"/>
+  </g>
+
+  <!-- Nodes -->
+  <circle class="nn-node" cx="75" cy="125" r="14" fill="#3fb950" opacity="0.5"/>
+  <circle class="nn-node" cx="175" cy="125" r="14" fill="#3fb950" opacity="0.65"/>
+  <circle class="nn-node" cx="275" cy="125" r="14" fill="#3fb950" opacity="0.8"/>
+  <circle class="nn-node" cx="375" cy="125" r="14" fill="#3fb950" opacity="1"/>
+
+  <!-- Time step labels -->
+  <text class="nn-label" x="75" y="165" text-anchor="middle" fill="#3fb950" font-size="9" opacity="0.4" font-family="sans-serif">t-1</text>
+  <text class="nn-label" x="175" y="165" text-anchor="middle" fill="#3fb950" font-size="9" opacity="0.4" font-family="sans-serif">t</text>
+  <text class="nn-label" x="275" y="165" text-anchor="middle" fill="#3fb950" font-size="9" opacity="0.4" font-family="sans-serif">t+1</text>
+  <text class="nn-label" x="375" y="165" text-anchor="middle" fill="#3fb950" font-size="9" opacity="0.4" font-family="sans-serif">t+2</text>
+
+  <!-- Input arrows from bottom -->
+  <line class="nn-edge" x1="75" y1="200" x2="75" y2="142" stroke="#3fb950" stroke-width="1" opacity="0.25"/>
+  <line class="nn-edge" x1="175" y1="200" x2="175" y2="142" stroke="#3fb950" stroke-width="1" opacity="0.25"/>
+  <line class="nn-edge" x1="275" y1="200" x2="275" y2="142" stroke="#3fb950" stroke-width="1" opacity="0.25"/>
+  <line class="nn-edge" x1="375" y1="200" x2="375" y2="142" stroke="#3fb950" stroke-width="1" opacity="0.25"/>
+
+  <!-- Input labels -->
+  <text class="nn-label" x="75" y="215" text-anchor="middle" fill="#3fb950" font-size="8" opacity="0.35" font-family="sans-serif">x(t-1)</text>
+  <text class="nn-label" x="175" y="215" text-anchor="middle" fill="#3fb950" font-size="8" opacity="0.35" font-family="sans-serif">x(t)</text>
+  <text class="nn-label" x="275" y="215" text-anchor="middle" fill="#3fb950" font-size="8" opacity="0.35" font-family="sans-serif">x(t+1)</text>
+  <text class="nn-label" x="375" y="215" text-anchor="middle" fill="#3fb950" font-size="8" opacity="0.35" font-family="sans-serif">x(t+2)</text>
+</svg>

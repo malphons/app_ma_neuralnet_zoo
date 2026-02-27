@@ -1,0 +1,18 @@
+{
+    "schema_version": "1.0",
+    "id": "cnn",
+    "name": "Convolutional Neural Network",
+    "short_description": "Spatial feature extraction through learnable convolution filters, designed for image and grid-structured data.",
+    "category": "convolutional",
+    "tags": ["convolution", "pooling", "feature-maps", "image-recognition", "spatial"],
+    "year_introduced": 1998,
+    "key_paper": "LeCun et al., 'Gradient-Based Learning Applied to Document Recognition'",
+    "paper_url": "http://yann.lecun.com/exdb/publis/pdf/lecun-98.pdf",
+    "complexity": "intermediate",
+    "color_accent": "#58a6ff",
+    "use_cases": ["image classification", "object detection", "image segmentation"],
+    "layer_types": ["conv2d", "maxpool", "dense", "relu", "softmax"],
+    "related_architectures": ["resnet", "alexnet", "unet"],
+    "interactive_features": ["layer-toggle", "data-flow"],
+    "last_updated": "2026-02-26"
+}

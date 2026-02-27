@@ -1,0 +1,18 @@
+{
+    "schema_version": "1.0",
+    "id": "transformer",
+    "name": "Transformer",
+    "short_description": "Self-attention mechanism replacing recurrence, enabling parallel sequence processing with positional encoding.",
+    "category": "attention",
+    "tags": ["self-attention", "multi-head-attention", "encoder-decoder", "positional-encoding", "NLP"],
+    "year_introduced": 2017,
+    "key_paper": "Vaswani et al., 'Attention Is All You Need'",
+    "paper_url": "https://arxiv.org/abs/1706.03762",
+    "complexity": "advanced",
+    "color_accent": "#f0883e",
+    "use_cases": ["machine translation", "text generation", "language modeling", "vision"],
+    "layer_types": ["embedding", "multi-head-attention", "feed-forward", "layer-norm", "softmax"],
+    "related_architectures": ["bert", "gpt", "vit"],
+    "interactive_features": ["layer-toggle", "data-flow", "weight-visualization"],
+    "last_updated": "2026-02-26"
+}

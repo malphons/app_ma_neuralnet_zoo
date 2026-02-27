@@ -1,0 +1,18 @@
+{
+    "schema_version": "1.0",
+    "id": "resnet",
+    "name": "Residual Network (ResNet)",
+    "short_description": "Skip connections allowing gradients to flow through identity mappings, enabling training of very deep networks.",
+    "category": "convolutional",
+    "tags": ["skip-connections", "residual-learning", "deep-networks", "identity-mapping", "batch-norm"],
+    "year_introduced": 2015,
+    "key_paper": "He et al., 'Deep Residual Learning for Image Recognition'",
+    "paper_url": "https://arxiv.org/abs/1512.03385",
+    "complexity": "intermediate",
+    "color_accent": "#58a6ff",
+    "use_cases": ["image classification", "object detection", "feature extraction", "transfer learning"],
+    "layer_types": ["conv2d", "batch-norm", "relu", "skip-connection", "global-avg-pool", "dense"],
+    "related_architectures": ["cnn", "alexnet", "unet"],
+    "interactive_features": ["layer-toggle", "data-flow", "weight-visualization"],
+    "last_updated": "2026-02-26"
+}

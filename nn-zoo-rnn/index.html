@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recurrent Neural Network - Neural Network Zoo</title>
+    <meta name="description" content="Interactive deep-dive into the Recurrent Neural Network (RNN) architecture. Explore hidden states, temporal dependencies, math, and code.">
+
+    <!-- Shared theme from hub -->
+    <link rel="stylesheet" href="https://malphons.github.io/app_ma_neuralnet_zoo/css/zoo.css">
+    <link rel="stylesheet" href="css/architecture.css">
+
+    <!-- D3.js v7 -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+
+    <!-- KaTeX for equations -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+</head>
+<body class="arch-page">
+
+    <!-- Header -->
+    <header class="arch-header">
+        <div class="arch-header__inner">
+            <a href="https://malphons.github.io/app_ma_neuralnet_zoo/" class="arch-header__back">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"/>
+                    <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Back to Zoo
+            </a>
+            <span class="arch-header__title">Recurrent Neural Network</span>
+            <div class="arch-header__actions">
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="theme-toggle__sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <svg class="theme-toggle__moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Interactive Diagram -->
+    <section class="arch-diagram">
+        <div class="arch-diagram__canvas" id="diagram-container"></div>
+        <div class="arch-diagram__controls">
+            <button class="arch-diagram__btn" id="btn-animate" title="Animate data flow">&#9654; Animate</button>
+            <button class="arch-diagram__btn" id="btn-reset" title="Reset zoom">Reset</button>
+        </div>
+    </section>
+
+    <!-- Content Tabs -->
+    <section class="arch-tabs">
+        <nav class="arch-tabs__nav">
+            <button class="arch-tab-btn arch-tab-btn--active" data-tab="overview">Overview</button>
+            <button class="arch-tab-btn" data-tab="architecture">Architecture</button>
+            <button class="arch-tab-btn" data-tab="math">Math</button>
+            <button class="arch-tab-btn" data-tab="code">Code</button>
+            <button class="arch-tab-btn" data-tab="papers">Papers</button>
+        </nav>
+
+        <!-- Overview Tab -->
+        <div class="arch-tab-content arch-tab-content--active" id="tab-overview">
+            <h2>Overview</h2>
+            <p>The <strong>Recurrent Neural Network (RNN)</strong> is a class of neural networks designed for processing sequential data. Unlike feedforward networks that treat each input independently, RNNs maintain a <strong>hidden state</strong> that is updated at each time step, allowing information to persist across the sequence. This makes them naturally suited for tasks where context and order matter.</p>
+            <p>At each time step, the RNN receives an input vector and combines it with the previous hidden state to produce a new hidden state and, optionally, an output. The same set of weights is applied at every time step &mdash; a property known as <strong>weight sharing</strong> &mdash; which allows the network to generalize across different sequence positions and handle variable-length inputs.</p>
+
+            <h3>Key Innovation</h3>
+            <p>The core idea is that the hidden state acts as a form of memory, carrying forward a compressed summary of all previously seen inputs. By sharing weights across time steps, RNNs can process sequences of arbitrary length with a fixed number of parameters. Training is performed via <strong>Backpropagation Through Time (BPTT)</strong>, which unrolls the network across time steps and computes gradients through the entire sequence.</p>
+
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li><strong>Time series prediction</strong> &mdash; forecasting stock prices, weather, sensor readings</li>
+                <li><strong>Language modeling</strong> &mdash; predicting the next word in a sequence</li>
+                <li><strong>Speech recognition</strong> &mdash; transcribing audio waveforms to text</li>
+                <li><strong>Music generation</strong> &mdash; composing melodies note by note</li>
+                <li><strong>Sequence-to-sequence tasks</strong> &mdash; machine translation, text summarization</li>
+            </ul>
+
+            <h3>Limitations</h3>
+            <ul>
+                <li><strong>Vanishing gradients</strong> &mdash; gradients shrink exponentially during BPTT, making it difficult to learn long-range dependencies</li>
+                <li><strong>Exploding gradients</strong> &mdash; gradients can also grow uncontrollably, requiring gradient clipping</li>
+                <li><strong>Short-term memory bias</strong> &mdash; in practice, vanilla RNNs struggle to remember information from more than ~10&ndash;20 time steps ago</li>
+                <li><strong>Sequential processing</strong> &mdash; time steps must be processed in order, preventing parallelization (unlike Transformers)</li>
+                <li><strong>Superseded by LSTM/GRU</strong> &mdash; gated variants address the vanishing gradient problem and are preferred in most applications</li>
+            </ul>
+        </div>
+
+        <!-- Architecture Tab -->
+        <div class="arch-tab-content" id="tab-architecture">
+            <h2>Layer-by-Layer Breakdown</h2>
+            <p>Click on any layer in the diagram above to highlight its description below. Hover over individual nodes to see connection details.</p>
+
+            <div class="arch-layer-card" data-layer="input-t0">
+                <div class="arch-layer-card__name">Input Layer</div>
+                <div class="arch-layer-card__detail">Shape: [batch_size, seq_len, n_features]</div>
+                <p>The input is a sequence of vectors, one per time step. Each vector has <code>n_features</code> dimensions. For example, in language modeling each input might be a word embedding vector, while in time series each input could be a single scalar measurement. The full input tensor has shape [batch, sequence length, features].</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="hidden-t0">
+                <div class="arch-layer-card__name">RNN Cell</div>
+                <div class="arch-layer-card__detail">Params: W_xh (n_features &times; hidden_size) + W_hh (hidden_size &times; hidden_size) + b_h</div>
+                <p>The RNN cell is the core computation unit, applied identically at every time step. It takes the current input <code>x_t</code> and the previous hidden state <code>h_{t-1}</code>, multiplies each by its respective weight matrix, sums them with a bias, and applies a tanh activation. The same weights <code>W_xh</code>, <code>W_hh</code>, and <code>b_h</code> are reused at every time step.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="hidden-t1">
+                <div class="arch-layer-card__name">Hidden State</div>
+                <div class="arch-layer-card__detail">Shape: [batch_size, hidden_size]</div>
+                <p>The hidden state is a vector that carries information across time steps. It serves as the network's memory, encoding a compressed summary of the sequence processed so far. At each step, the hidden state is updated based on the new input and the previous hidden state. The initial hidden state <code>h_0</code> is typically initialized to zeros.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="output-t1">
+                <div class="arch-layer-card__name">Output Layer</div>
+                <div class="arch-layer-card__detail">Shape: [batch_size, output_size] (per step or final only)</div>
+                <p>The output at each time step is computed from the hidden state via a linear transformation <code>W_hy h_t + b_y</code>. Depending on the task, the network may produce an output at every time step (e.g., language modeling) or only at the final step (e.g., sentiment classification). For sequence-to-sequence tasks, all outputs are used.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="dense-out">
+                <div class="arch-layer-card__name">Dense / Softmax</div>
+                <div class="arch-layer-card__detail">Params: W_hy (hidden_size &times; n_classes) + b_y</div>
+                <p>The final dense layer projects the hidden state (or output) into the target space. For classification, a softmax activation converts raw logits into a probability distribution over classes. For regression, a linear activation is used. In many-to-one tasks, only the last hidden state is fed to this layer.</p>
+            </div>
+        </div>
+
+        <!-- Math Tab -->
+        <div class="arch-tab-content" id="tab-math">
+            <h2>Key Equations</h2>
+
+            <h3>Hidden State Update</h3>
+            <div class="arch-equation">
+                $$h_t = \tanh(W_{hh} \, h_{t-1} + W_{xh} \, x_t + b_h)$$
+            </div>
+            <p>At each time step <em>t</em>, the hidden state <strong>h<sub>t</sub></strong> is computed by applying the tanh activation to a linear combination of the previous hidden state <strong>h<sub>t-1</sub></strong> and the current input <strong>x<sub>t</sub></strong>. The matrices <strong>W<sub>hh</sub></strong> (hidden-to-hidden) and <strong>W<sub>xh</sub></strong> (input-to-hidden) are shared across all time steps.</p>
+
+            <h3>Output Computation</h3>
+            <div class="arch-equation">
+                $$y_t = W_{hy} \, h_t + b_y$$
+            </div>
+            <p>The output at each time step is a linear projection of the hidden state. For classification tasks, a softmax is applied on top: $\hat{y}_t = \text{softmax}(y_t)$.</p>
+
+            <h3>Backpropagation Through Time (BPTT)</h3>
+            <div class="arch-equation">
+                $$\frac{\partial \mathcal{L}}{\partial W_{hh}} = \sum_{t=1}^{T} \frac{\partial \mathcal{L}_t}{\partial W_{hh}} = \sum_{t=1}^{T} \sum_{k=1}^{t} \frac{\partial \mathcal{L}_t}{\partial h_t} \left(\prod_{j=k+1}^{t} \frac{\partial h_j}{\partial h_{j-1}}\right) \frac{\partial h_k}{\partial W_{hh}}$$
+            </div>
+            <p>BPTT unrolls the RNN across all time steps and applies the chain rule backward through time. The product of Jacobians $\prod \frac{\partial h_j}{\partial h_{j-1}}$ is the source of the <strong>vanishing/exploding gradient</strong> problem: if the spectral radius of $W_{hh}$ is less than 1, gradients shrink exponentially; if greater than 1, they explode.</p>
+
+            <h3>Cross-Entropy Loss (Sequence)</h3>
+            <div class="arch-equation">
+                $$\mathcal{L} = -\frac{1}{T}\sum_{t=1}^{T}\sum_{c=1}^{C} y_{t,c} \log(\hat{y}_{t,c})$$
+            </div>
+            <p>For sequence classification, the loss is averaged over all time steps <em>T</em> and all classes <em>C</em>. For many-to-one tasks, only the final time step contributes to the loss.</p>
+        </div>
+
+        <!-- Code Tab -->
+        <div class="arch-tab-content" id="tab-code">
+            <h2>Implementation</h2>
+
+            <h3>PyTorch</h3>
+            <pre><code>import torch
+import torch.nn as nn
+
+class SimpleRNN(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size, num_layers=1):
+        super().__init__()
+        self.hidden_size = hidden_size
+        self.num_layers = num_layers
+        self.rnn = nn.RNN(input_size, hidden_size,
+                          num_layers=num_layers, batch_first=True)
+        self.fc = nn.Linear(hidden_size, output_size)
+
+    def forward(self, x):
+        # x shape: [batch, seq_len, input_size]
+        h0 = torch.zeros(self.num_layers, x.size(0),
+                          self.hidden_size).to(x.device)
+        out, h_n = self.rnn(x, h0)
+        # out shape: [batch, seq_len, hidden_size]
+        # Use last time step for classification
+        out = self.fc(out[:, -1, :])
+        return out
+
+# Example usage
+model = SimpleRNN(input_size=10, hidden_size=32, output_size=5)
+x = torch.randn(8, 20, 10)  # batch=8, seq_len=20, features=10
+output = model(x)             # shape: [8, 5]</code></pre>
+
+            <h3>TensorFlow / Keras</h3>
+            <pre><code>import tensorflow as tf
+from tensorflow import keras
+
+model = keras.Sequential([
+    keras.layers.SimpleRNN(32, input_shape=(20, 10),
+                           return_sequences=False),
+    keras.layers.Dense(5, activation='softmax'),
+])
+
+model.compile(
+    optimizer='adam',
+    loss='categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+# model.summary() to see parameter counts
+# Total params: W_xh(10*32) + W_hh(32*32) + b_h(32) + W_hy(32*5) + b_y(5)</code></pre>
+
+            <h3>NumPy (From Scratch)</h3>
+            <pre><code>import numpy as np
+
+def tanh(z):
+    return np.tanh(z)
+
+class RNNCell:
+    def __init__(self, input_size, hidden_size):
+        scale = 0.01
+        self.W_xh = np.random.randn(input_size, hidden_size) * scale
+        self.W_hh = np.random.randn(hidden_size, hidden_size) * scale
+        self.b_h = np.zeros((1, hidden_size))
+
+    def step(self, x_t, h_prev):
+        """Single time step: h_t = tanh(x_t @ W_xh + h_prev @ W_hh + b_h)"""
+        h_t = tanh(x_t @ self.W_xh + h_prev @ self.W_hh + self.b_h)
+        return h_t
+
+    def forward(self, x_seq):
+        """Process full sequence: x_seq shape [seq_len, input_size]"""
+        seq_len = x_seq.shape[0]
+        hidden_size = self.W_hh.shape[0]
+        h = np.zeros((1, hidden_size))
+        hidden_states = []
+        for t in range(seq_len):
+            h = self.step(x_seq[t:t+1], h)
+            hidden_states.append(h)
+        return np.vstack(hidden_states), h
+
+# Example
+cell = RNNCell(input_size=10, hidden_size=32)
+x_seq = np.random.randn(20, 10)  # 20 time steps, 10 features
+all_h, final_h = cell.forward(x_seq)
+print(all_h.shape)   # (20, 32)
+print(final_h.shape)  # (1, 32)</code></pre>
+        </div>
+
+        <!-- Papers Tab -->
+        <div class="arch-tab-content" id="tab-papers">
+            <h2>Key Papers</h2>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title">
+                        <a href="https://doi.org/10.1038/323533a0" target="_blank" rel="noopener">Learning representations by back-propagating errors</a>
+                    </div>
+                    <div class="arch-paper__authors">Rumelhart, Hinton &amp; Williams, 1986 &mdash; Introduced backpropagation for training multi-layer networks, the foundation for training RNNs</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title">
+                        <a href="https://doi.org/10.1016/S0364-0213(05)80007-2" target="_blank" rel="noopener">Finding Structure in Time</a>
+                    </div>
+                    <div class="arch-paper__authors">Jeffrey L. Elman, 1990 &mdash; Introduced the Elman network (simple RNN), demonstrating that recurrent connections can learn temporal structure</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title">
+                        <a href="https://doi.org/10.1109/72.279181" target="_blank" rel="noopener">Learning Long-Term Dependencies with Gradient Descent is Difficult</a>
+                    </div>
+                    <div class="arch-paper__authors">Bengio, Simard &amp; Frasconi, 1994 &mdash; Formally characterized the vanishing gradient problem in RNNs, motivating gated architectures</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title">
+                        <a href="https://doi.org/10.1162/neco.1997.9.8.1735" target="_blank" rel="noopener">Long Short-Term Memory</a>
+                    </div>
+                    <div class="arch-paper__authors">Hochreiter &amp; Schmidhuber, 1997 &mdash; Proposed LSTM gating mechanism to solve the vanishing gradient problem in RNNs</div>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 2rem;">Related Architectures</h2>
+            <p>The vanilla RNN is the foundation upon which these architectures build:</p>
+            <ul>
+                <li><strong>LSTM</strong> &mdash; Adds input, forget, and output gates to control information flow and solve vanishing gradients</li>
+                <li><strong>GRU</strong> &mdash; A simplified gated RNN with reset and update gates, fewer parameters than LSTM</li>
+                <li><strong>Seq2Seq</strong> &mdash; Encoder-decoder architecture using RNNs for sequence-to-sequence tasks like translation</li>
+                <li><strong>Transformer</strong> &mdash; Replaces recurrence with self-attention, enabling full parallelization</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="arch-footer">
+        <a href="https://malphons.github.io/app_ma_neuralnet_zoo/">&#8592; Back to Neural Network Zoo</a>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/diagram.js"></script>
+    <script>
+        // Theme toggle
+        (function() {
+            var html = document.documentElement;
+            var toggleBtn = document.querySelector('.theme-toggle');
+            var saved = localStorage.getItem('nnzoo_theme');
+            if (saved) {
+                html.setAttribute('data-theme', saved);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                html.setAttribute('data-theme', 'light');
+            }
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    var current = html.getAttribute('data-theme') || 'dark';
+                    var next = current === 'dark' ? 'light' : 'dark';
+                    html.setAttribute('data-theme', next);
+                    localStorage.setItem('nnzoo_theme', next);
+                });
+            }
+        })();
+
+        // Tab switching
+        (function() {
+            var tabs = document.querySelectorAll('.arch-tab-btn');
+            tabs.forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(function(t) { t.classList.remove('arch-tab-btn--active'); });
+                    tab.classList.add('arch-tab-btn--active');
+                    document.querySelectorAll('.arch-tab-content').forEach(function(c) {
+                        c.classList.remove('arch-tab-content--active');
+                    });
+                    var target = document.getElementById('tab-' + tab.getAttribute('data-tab'));
+                    if (target) target.classList.add('arch-tab-content--active');
+                });
+            });
+        })();
+
+        // Initialize diagram
+        NNZoo.diagram.init('#diagram-container');
+
+        // Diagram controls
+        document.getElementById('btn-animate').addEventListener('click', function() {
+            NNZoo.diagram.animateDataFlow();
+        });
+        document.getElementById('btn-reset').addEventListener('click', function() {
+            NNZoo.diagram.resetZoom();
+        });
+
+        // KaTeX auto-render
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ]
+                });
+            }
+        });
+    </script>
+</body>
+</html>

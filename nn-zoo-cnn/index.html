@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convolutional Neural Network - Neural Network Zoo</title>
+    <meta name="description" content="Interactive deep-dive into the Convolutional Neural Network (CNN) architecture. Explore convolution layers, pooling, feature maps, math, and code.">
+
+    <!-- Shared theme from hub -->
+    <link rel="stylesheet" href="https://malphons.github.io/app_ma_neuralnet_zoo/css/zoo.css">
+    <link rel="stylesheet" href="css/architecture.css">
+
+    <!-- D3.js v7 -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+
+    <!-- KaTeX for equations -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+</head>
+<body class="arch-page">
+
+    <!-- Header -->
+    <header class="arch-header">
+        <div class="arch-header__inner">
+            <a href="https://malphons.github.io/app_ma_neuralnet_zoo/" class="arch-header__back">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"/>
+                    <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Back to Zoo
+            </a>
+            <span class="arch-header__title">Convolutional Neural Network</span>
+            <div class="arch-header__actions">
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="theme-toggle__sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <svg class="theme-toggle__moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Interactive Diagram -->
+    <section class="arch-diagram">
+        <div class="arch-diagram__canvas" id="diagram-container"></div>
+        <div class="arch-diagram__controls">
+            <button class="arch-diagram__btn" id="btn-animate" title="Animate data flow">&#9654; Animate</button>
+            <button class="arch-diagram__btn" id="btn-reset" title="Reset zoom">Reset</button>
+        </div>
+    </section>
+
+    <!-- Content Tabs -->
+    <section class="arch-tabs">
+        <nav class="arch-tabs__nav">
+            <button class="arch-tab-btn arch-tab-btn--active" data-tab="overview">Overview</button>
+            <button class="arch-tab-btn" data-tab="architecture">Architecture</button>
+            <button class="arch-tab-btn" data-tab="math">Math</button>
+            <button class="arch-tab-btn" data-tab="code">Code</button>
+            <button class="arch-tab-btn" data-tab="papers">Papers</button>
+        </nav>
+
+        <!-- Overview Tab -->
+        <div class="arch-tab-content arch-tab-content--active" id="tab-overview">
+            <h2>Overview</h2>
+            <p>The <strong>Convolutional Neural Network (CNN)</strong> is a class of deep neural networks designed to process data with a grid-like topology, such as images. First demonstrated at scale by Yann LeCun and colleagues in 1998 with LeNet-5, CNNs exploit the spatial structure of input data through learnable convolution filters that slide across the input, extracting local features at every position.</p>
+            <p>Unlike fully-connected networks where every input connects to every neuron, CNNs use <strong>local connectivity</strong> and <strong>parameter sharing</strong>: a small filter (kernel) is applied across the entire input, meaning the same weights detect the same feature regardless of its position. This gives CNNs <strong>translation invariance</strong> &mdash; a feature like an edge or a corner is detected wherever it appears in the image.</p>
+
+            <h3>Key Innovation</h3>
+            <p>CNNs introduced three critical ideas to neural network design:</p>
+            <ul>
+                <li><strong>Local receptive fields</strong> &mdash; each neuron connects only to a small region of the input, capturing local spatial patterns</li>
+                <li><strong>Shared weights (convolution filters)</strong> &mdash; the same filter is reused across the entire input, dramatically reducing the parameter count compared to dense layers</li>
+                <li><strong>Hierarchical feature learning</strong> &mdash; early layers learn low-level features (edges, textures), while deeper layers compose them into high-level concepts (shapes, objects)</li>
+            </ul>
+
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li><strong>Image classification</strong> &mdash; categorizing images into classes (e.g., ImageNet, CIFAR-10)</li>
+                <li><strong>Object detection</strong> &mdash; locating and classifying objects within images (YOLO, Faster R-CNN)</li>
+                <li><strong>Image segmentation</strong> &mdash; pixel-level classification for medical imaging, autonomous driving</li>
+                <li><strong>Video analysis</strong> &mdash; action recognition, video captioning using 3D convolutions</li>
+                <li><strong>Beyond vision</strong> &mdash; 1D convolutions for audio, text classification, and time-series data</li>
+            </ul>
+
+            <h3>Limitations</h3>
+            <ul>
+                <li>Not inherently suited for sequential or temporal data (RNNs and Transformers are preferred)</li>
+                <li>Large memory footprint for high-resolution images due to feature map storage</li>
+                <li>Pooling layers discard spatial precision, which can hurt tasks like fine-grained localization</li>
+                <li>Requires large labeled datasets to learn robust features without pre-training</li>
+            </ul>
+        </div>
+
+        <!-- Architecture Tab -->
+        <div class="arch-tab-content" id="tab-architecture">
+            <h2>Layer-by-Layer Breakdown</h2>
+            <p>Click on any layer in the diagram above to highlight its description below. Hover over individual nodes to see connection details.</p>
+
+            <div class="arch-layer-card" data-layer="input">
+                <div class="arch-layer-card__name">Input Layer (RGB Image)</div>
+                <div class="arch-layer-card__detail">Shape: [batch, 3, H, W]</div>
+                <p>The input layer receives a raw image as a 3D tensor: 3 color channels (Red, Green, Blue) with height H and width W. Each channel is a 2D grid of pixel intensities, typically normalized to [0, 1] or [-1, 1]. No learnable parameters &mdash; this layer simply feeds pixel data into the first convolution.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="conv1">
+                <div class="arch-layer-card__name">Conv1 + ReLU (Convolution Layer 1)</div>
+                <div class="arch-layer-card__detail">Shape: [batch, C1, H', W'] &middot; Params: C1 &times; (K &times; K &times; 3 + 1)</div>
+                <p>The first convolutional layer applies C1 learnable filters (kernels) of size K&times;K across the input image. Each filter slides over the input, computing a dot product at each position to produce one feature map. The ReLU activation function is applied element-wise, zeroing out negative values. This layer typically detects low-level features such as edges, corners, and color gradients.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="pool1">
+                <div class="arch-layer-card__name">MaxPool1 (Max Pooling Layer 1)</div>
+                <div class="arch-layer-card__detail">Shape: [batch, C1, H'/2, W'/2] &middot; Params: 0</div>
+                <p>Max pooling reduces spatial dimensions by taking the maximum value within a 2&times;2 window (stride 2). This provides a small degree of translation invariance, reduces computation for subsequent layers, and prevents overfitting by summarizing local regions. The number of feature maps (channels) remains unchanged.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="conv2">
+                <div class="arch-layer-card__name">Conv2 + ReLU (Convolution Layer 2)</div>
+                <div class="arch-layer-card__detail">Shape: [batch, C2, H'', W''] &middot; Params: C2 &times; (K &times; K &times; C1 + 1)</div>
+                <p>The second convolution applies C2 filters over the pooled feature maps. Because the spatial dimensions are already reduced, these filters now have a larger effective receptive field over the original image. This layer learns to combine the low-level features from Conv1 into more complex patterns: shapes, textures, and parts of objects.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="pool2">
+                <div class="arch-layer-card__name">MaxPool2 (Max Pooling Layer 2)</div>
+                <div class="arch-layer-card__detail">Shape: [batch, C2, H''/2, W''/2] &middot; Params: 0</div>
+                <p>A second round of max pooling further halves the spatial dimensions. At this point, each feature map is a compact summary of a large region of the original input, encoding whether specific mid-level features are present somewhere in that region.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="dense">
+                <div class="arch-layer-card__name">Flatten + Dense (Fully Connected)</div>
+                <div class="arch-layer-card__detail">Shape: [batch, dense_units] &middot; Params: (C2 &times; H'' &times; W'') &times; dense_units + dense_units</div>
+                <p>The 2D feature maps are flattened into a 1D vector and passed through a fully-connected (dense) layer with ReLU activation. This layer acts as the classification head, combining spatial features from across the image into a global representation. This is where the network learns which combinations of features correspond to each class.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="output">
+                <div class="arch-layer-card__name">Output Layer (Dense + Softmax)</div>
+                <div class="arch-layer-card__detail">Shape: [batch, n_classes]</div>
+                <p>The final layer has one neuron per class. A softmax activation converts the raw logits into a probability distribution over all classes, where each output is between 0 and 1 and all outputs sum to 1. The predicted class is the one with the highest probability.</p>
+            </div>
+        </div>
+
+        <!-- Math Tab -->
+        <div class="arch-tab-content" id="tab-math">
+            <h2>Key Equations</h2>
+
+            <h3>2D Convolution Operation</h3>
+            <div class="arch-equation">
+                $$(f * g)(i,j) = \sum_m \sum_n f(m,n) \cdot g(i-m, j-n)$$
+            </div>
+            <p>The convolution operator slides a kernel <em>g</em> over the input <em>f</em>, computing the sum of element-wise products at each position (i, j). In practice, deep learning frameworks use cross-correlation (without flipping the kernel), but the term "convolution" is used by convention.</p>
+
+            <h3>Output Spatial Size</h3>
+            <div class="arch-equation">
+                $$O = \frac{W - K + 2P}{S} + 1$$
+            </div>
+            <p>Where <strong>W</strong> is the input width (or height), <strong>K</strong> is the kernel size, <strong>P</strong> is the padding, and <strong>S</strong> is the stride. This formula determines the spatial dimensions of each feature map after a convolution or pooling operation.</p>
+
+            <h3>ReLU Activation</h3>
+            <div class="arch-equation">
+                $$\text{ReLU}(z) = \max(0, z)$$
+            </div>
+            <p>The Rectified Linear Unit introduces non-linearity by zeroing out negative values. It is computationally efficient and helps mitigate the vanishing gradient problem in deep networks.</p>
+
+            <h3>Softmax Output</h3>
+            <div class="arch-equation">
+                $$\text{softmax}(z_i) = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}}$$
+            </div>
+            <p>Softmax converts the raw output logits into a probability distribution across <em>K</em> classes.</p>
+
+            <h3>Cross-Entropy Loss</h3>
+            <div class="arch-equation">
+                $$\mathcal{L} = -\sum_{i=1}^{K} y_i \log(\hat{y}_i)$$
+            </div>
+            <p>The standard loss function for multi-class classification. It measures how far the predicted probability distribution is from the true one-hot label. Lower loss means better predictions.</p>
+        </div>
+
+        <!-- Code Tab -->
+        <div class="arch-tab-content" id="tab-code">
+            <h2>Implementation</h2>
+
+            <h3>PyTorch</h3>
+            <pre><code>import torch
+import torch.nn as nn
+
+class CNN(nn.Module):
+    def __init__(self, num_classes=2):
+        super().__init__()
+        self.features = nn.Sequential(
+            # Conv1: 3 input channels -> 16 feature maps, 3x3 kernel
+            nn.Conv2d(3, 16, kernel_size=3, padding=1),  # [B, 16, H, W]
+            nn.ReLU(),
+            nn.MaxPool2d(2, 2),                           # [B, 16, H/2, W/2]
+
+            # Conv2: 16 -> 32 feature maps
+            nn.Conv2d(16, 32, kernel_size=3, padding=1),  # [B, 32, H/2, W/2]
+            nn.ReLU(),
+            nn.MaxPool2d(2, 2),                           # [B, 32, H/4, W/4]
+        )
+        self.classifier = nn.Sequential(
+            nn.Flatten(),                                  # [B, 32*H/4*W/4]
+            nn.Linear(32 * 8 * 8, 64),                    # assuming 32x32 input
+            nn.ReLU(),
+            nn.Linear(64, num_classes),                    # [B, num_classes]
+        )
+
+    def forward(self, x):
+        x = self.features(x)     # spatial feature extraction
+        x = self.classifier(x)   # classification head
+        return x
+
+# Example: 32x32 RGB images, 2 classes
+model = CNN(num_classes=2)
+x = torch.randn(8, 3, 32, 32)   # batch of 8 images
+logits = model(x)                # shape: [8, 2]
+probs = torch.softmax(logits, dim=1)</code></pre>
+
+            <h3>TensorFlow / Keras</h3>
+            <pre><code>import tensorflow as tf
+from tensorflow import keras
+
+model = keras.Sequential([
+    # Conv1 + Pool1
+    keras.layers.Conv2D(16, (3, 3), activation='relu',
+                        padding='same', input_shape=(32, 32, 3)),  # [B, 32, 32, 16]
+    keras.layers.MaxPooling2D((2, 2)),                             # [B, 16, 16, 16]
+
+    # Conv2 + Pool2
+    keras.layers.Conv2D(32, (3, 3), activation='relu',
+                        padding='same'),                           # [B, 16, 16, 32]
+    keras.layers.MaxPooling2D((2, 2)),                             # [B, 8, 8, 32]
+
+    # Classification head
+    keras.layers.Flatten(),                                        # [B, 2048]
+    keras.layers.Dense(64, activation='relu'),                     # [B, 64]
+    keras.layers.Dense(2, activation='softmax'),                   # [B, 2]
+])
+
+model.compile(
+    optimizer='adam',
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+# model.summary() to see parameter counts per layer</code></pre>
+        </div>
+
+        <!-- Papers Tab -->
+        <div class="arch-tab-content" id="tab-papers">
+            <h2>Key Papers</h2>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title">
+                        <a href="http://yann.lecun.com/exdb/publis/pdf/lecun-98.pdf" target="_blank" rel="noopener">Gradient-Based Learning Applied to Document Recognition</a>
+                    </div>
+                    <div class="arch-paper__authors">LeCun, Bottou, Bengio & Haffner, 1998 &mdash; The LeNet-5 paper: the foundational CNN architecture for handwritten digit recognition</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title">
+                        <a href="https://papers.nips.cc/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html" target="_blank" rel="noopener">ImageNet Classification with Deep Convolutional Neural Networks</a>
+                    </div>
+                    <div class="arch-paper__authors">Krizhevsky, Sutskever & Hinton, 2012 &mdash; AlexNet: sparked the deep learning revolution by winning ImageNet with a large CNN using GPUs, ReLU, and dropout</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title">
+                        <a href="https://arxiv.org/abs/1409.1556" target="_blank" rel="noopener">Very Deep Convolutional Networks for Large-Scale Image Recognition</a>
+                    </div>
+                    <div class="arch-paper__authors">Simonyan & Zisserman, 2014 &mdash; VGGNet: demonstrated that depth (16-19 layers) with small 3&times;3 filters consistently improves performance</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title">
+                        <a href="https://arxiv.org/abs/1512.03385" target="_blank" rel="noopener">Deep Residual Learning for Image Recognition</a>
+                    </div>
+                    <div class="arch-paper__authors">He, Zhang, Ren & Sun, 2015 &mdash; ResNet: introduced skip connections enabling training of 100+ layer CNNs</div>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 2rem;">Related Architectures</h2>
+            <p>CNNs serve as the backbone for many specialized architectures:</p>
+            <ul>
+                <li><strong>ResNet</strong> &mdash; Adds residual (skip) connections to enable training of very deep CNNs without degradation</li>
+                <li><strong>U-Net</strong> &mdash; Encoder-decoder CNN with skip connections, widely used in image segmentation</li>
+                <li><strong>AlexNet</strong> &mdash; The pioneering deep CNN that demonstrated GPU-accelerated training at scale</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="arch-footer">
+        <a href="https://malphons.github.io/app_ma_neuralnet_zoo/">&#8592; Back to Neural Network Zoo</a>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/diagram.js"></script>
+    <script>
+        // Theme toggle
+        (function() {
+            var html = document.documentElement;
+            var toggleBtn = document.querySelector('.theme-toggle');
+            var saved = localStorage.getItem('nnzoo_theme');
+            if (saved) {
+                html.setAttribute('data-theme', saved);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                html.setAttribute('data-theme', 'light');
+            }
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    var current = html.getAttribute('data-theme') || 'dark';
+                    var next = current === 'dark' ? 'light' : 'dark';
+                    html.setAttribute('data-theme', next);
+                    localStorage.setItem('nnzoo_theme', next);
+                });
+            }
+        })();
+
+        // Tab switching
+        (function() {
+            var tabs = document.querySelectorAll('.arch-tab-btn');
+            tabs.forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(function(t) { t.classList.remove('arch-tab-btn--active'); });
+                    tab.classList.add('arch-tab-btn--active');
+                    document.querySelectorAll('.arch-tab-content').forEach(function(c) {
+                        c.classList.remove('arch-tab-content--active');
+                    });
+                    var target = document.getElementById('tab-' + tab.getAttribute('data-tab'));
+                    if (target) target.classList.add('arch-tab-content--active');
+                });
+            });
+        })();
+
+        // Initialize diagram
+        NNZoo.diagram.init('#diagram-container');
+
+        // Diagram controls
+        document.getElementById('btn-animate').addEventListener('click', function() {
+            NNZoo.diagram.animateDataFlow();
+        });
+        document.getElementById('btn-reset').addEventListener('click', function() {
+            NNZoo.diagram.resetZoom();
+        });
+
+        // KaTeX auto-render
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ]
+                });
+            }
+        });
+    </script>
+</body>
+</html>

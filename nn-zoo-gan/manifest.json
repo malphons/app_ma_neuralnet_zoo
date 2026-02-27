@@ -1,0 +1,18 @@
+{
+    "schema_version": "1.0",
+    "id": "gan",
+    "name": "Generative Adversarial Network",
+    "short_description": "Two-network adversarial training where a generator creates data and a discriminator evaluates authenticity.",
+    "category": "generative",
+    "tags": ["generator", "discriminator", "adversarial", "image-generation", "minimax"],
+    "year_introduced": 2014,
+    "key_paper": "Goodfellow et al., 'Generative Adversarial Nets'",
+    "paper_url": "https://arxiv.org/abs/1406.2661",
+    "complexity": "advanced",
+    "color_accent": "#bc8cff",
+    "use_cases": ["image generation", "style transfer", "data augmentation", "super-resolution"],
+    "layer_types": ["noise-input", "generator", "discriminator", "output"],
+    "related_architectures": ["vae", "diffusion"],
+    "interactive_features": ["layer-toggle", "data-flow", "weight-visualization"],
+    "last_updated": "2026-02-26"
+}

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformer - Neural Network Zoo</title>
+    <meta name="description" content="Interactive deep-dive into the Transformer architecture. Explore self-attention, multi-head attention, positional encoding, math, and code.">
+    <link rel="stylesheet" href="https://malphons.github.io/app_ma_neuralnet_zoo/css/zoo.css">
+    <link rel="stylesheet" href="css/architecture.css">
+    <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+</head>
+<body class="arch-page">
+    <header class="arch-header">
+        <div class="arch-header__inner">
+            <a href="https://malphons.github.io/app_ma_neuralnet_zoo/" class="arch-header__back">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Back to Zoo
+            </a>
+            <span class="arch-header__title">Transformer</span>
+            <div class="arch-header__actions">
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="theme-toggle__sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    <svg class="theme-toggle__moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="arch-diagram">
+        <div class="arch-diagram__canvas" id="diagram-container"></div>
+        <div class="arch-diagram__controls">
+            <button class="arch-diagram__btn" id="btn-animate" title="Animate data flow">&#9654; Animate</button>
+            <button class="arch-diagram__btn" id="btn-reset" title="Reset zoom">Reset</button>
+        </div>
+    </section>
+
+    <section class="arch-tabs">
+        <nav class="arch-tabs__nav">
+            <button class="arch-tab-btn arch-tab-btn--active" data-tab="overview">Overview</button>
+            <button class="arch-tab-btn" data-tab="architecture">Architecture</button>
+            <button class="arch-tab-btn" data-tab="math">Math</button>
+            <button class="arch-tab-btn" data-tab="code">Code</button>
+            <button class="arch-tab-btn" data-tab="papers">Papers</button>
+        </nav>
+
+        <div class="arch-tab-content arch-tab-content--active" id="tab-overview">
+            <h2>Overview</h2>
+            <p>The <strong>Transformer</strong>, introduced by Vaswani et al. in 2017, replaced recurrence with <strong>self-attention</strong>, enabling fully parallel sequence processing. This architectural breakthrough powers virtually all modern large language models (GPT, BERT, etc.) and has expanded to vision, audio, and multi-modal tasks.</p>
+            <p>The key mechanism is <strong>scaled dot-product attention</strong>, where each element in a sequence attends to all other elements simultaneously. Combined with <strong>positional encoding</strong> to inject sequence order information, Transformers can model long-range dependencies without the sequential bottleneck of RNNs.</p>
+
+            <h3>Key Innovation</h3>
+            <p>Self-attention allows every position to directly attend to every other position in constant depth, unlike RNNs which require O(n) steps. Multi-head attention enables the model to attend to information from different representation subspaces simultaneously.</p>
+
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li><strong>Machine translation</strong> &mdash; the original application (encoder-decoder Transformer)</li>
+                <li><strong>Text generation</strong> &mdash; GPT-style autoregressive language models</li>
+                <li><strong>Language understanding</strong> &mdash; BERT-style bidirectional encoding</li>
+                <li><strong>Computer vision</strong> &mdash; Vision Transformer (ViT) for image classification</li>
+                <li><strong>Multi-modal</strong> &mdash; combining text, image, and audio processing</li>
+            </ul>
+
+            <h3>Limitations</h3>
+            <ul>
+                <li>Quadratic memory and compute cost in sequence length O(n&sup2;)</li>
+                <li>No inherent notion of position (requires positional encoding)</li>
+                <li>Requires large amounts of training data to generalize well</li>
+                <li>Computationally expensive for very long sequences</li>
+            </ul>
+        </div>
+
+        <div class="arch-tab-content" id="tab-architecture">
+            <h2>Layer-by-Layer Breakdown</h2>
+            <p>Click on any layer in the diagram above to highlight its description below.</p>
+
+            <div class="arch-layer-card" data-layer="embedding">
+                <div class="arch-layer-card__name">Input Embedding</div>
+                <div class="arch-layer-card__detail">Shape: [batch_size, seq_len, d_model]</div>
+                <p>Converts input tokens (integers) into dense vector representations of dimension d_model. For text, this is a learned embedding matrix. The embeddings are scaled by the square root of d_model to maintain appropriate magnitude.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="pos-enc">
+                <div class="arch-layer-card__name">Positional Encoding</div>
+                <div class="arch-layer-card__detail">Added (not concatenated) to embeddings</div>
+                <p>Since Transformers have no recurrence or convolution, positional encodings inject information about token positions. The original paper uses sinusoidal functions of different frequencies, enabling the model to learn relative positions and generalize to unseen sequence lengths.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="attention">
+                <div class="arch-layer-card__name">Multi-Head Self-Attention</div>
+                <div class="arch-layer-card__detail">h heads &middot; Q, K, V projections &middot; Scaled dot-product</div>
+                <p>The core of the Transformer. Input is projected into Queries (Q), Keys (K), and Values (V). Attention weights are computed as softmax(QK^T / sqrt(d_k)). Multiple attention heads allow attending to different aspects of the input simultaneously. Outputs are concatenated and linearly projected.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="ffn">
+                <div class="arch-layer-card__name">Feed-Forward Network</div>
+                <div class="arch-layer-card__detail">Two linear layers with ReLU &middot; Applied position-wise</div>
+                <p>A two-layer fully-connected network applied independently to each position. Typically expands the dimension (d_model to 4*d_model) then projects back. This provides the non-linear transformation capacity that attention alone cannot.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="norm">
+                <div class="arch-layer-card__name">Add &amp; Layer Normalization</div>
+                <div class="arch-layer-card__detail">Residual connection + LayerNorm</div>
+                <p>Each sub-layer (attention, FFN) is wrapped in a residual connection followed by layer normalization: LayerNorm(x + Sublayer(x)). This stabilizes training and enables very deep stacking of encoder/decoder blocks.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="output">
+                <div class="arch-layer-card__name">Output Projection</div>
+                <div class="arch-layer-card__detail">Linear + Softmax &middot; Shape: [batch_size, seq_len, vocab_size]</div>
+                <p>A linear projection from d_model to vocabulary size, followed by softmax to produce token probabilities. For encoder-only models (BERT), this may be a classification head instead.</p>
+            </div>
+        </div>
+
+        <div class="arch-tab-content" id="tab-math">
+            <h2>Key Equations</h2>
+
+            <h3>Scaled Dot-Product Attention</h3>
+            <div class="arch-equation">
+                $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$
+            </div>
+            <p>Queries and Keys determine attention weights via dot product, scaled by sqrt(d_k) to prevent softmax saturation. Values are weighted by these attention scores.</p>
+
+            <h3>Multi-Head Attention</h3>
+            <div class="arch-equation">
+                $$\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h) W^O$$
+                $$\text{where } \text{head}_i = \text{Attention}(QW_i^Q, KW_i^K, VW_i^V)$$
+            </div>
+            <p>Each head projects Q, K, V into a subspace. Heads are concatenated and projected, allowing the model to jointly attend to information from different representation subspaces.</p>
+
+            <h3>Positional Encoding</h3>
+            <div class="arch-equation">
+                $$PE_{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d_{model}}}\right)$$
+                $$PE_{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d_{model}}}\right)$$
+            </div>
+            <p>Sinusoidal functions of different frequencies encode absolute position. For any fixed offset k, PE(pos+k) can be represented as a linear function of PE(pos).</p>
+
+            <h3>Feed-Forward Network</h3>
+            <div class="arch-equation">
+                $$\text{FFN}(x) = \text{ReLU}(xW_1 + b_1)W_2 + b_2$$
+            </div>
+
+            <h3>Layer Normalization</h3>
+            <div class="arch-equation">
+                $$\text{LayerNorm}(x) = \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}} \cdot \gamma + \beta$$
+            </div>
+        </div>
+
+        <div class="arch-tab-content" id="tab-code">
+            <h2>Implementation</h2>
+
+            <h3>Scaled Dot-Product Attention (PyTorch)</h3>
+            <pre><code>import torch
+import torch.nn as nn
+import math
+
+def scaled_dot_product_attention(Q, K, V, mask=None):
+    d_k = Q.size(-1)
+    scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)
+    if mask is not None:
+        scores = scores.masked_fill(mask == 0, float('-inf'))
+    weights = torch.softmax(scores, dim=-1)
+    return torch.matmul(weights, V), weights
+
+class MultiHeadAttention(nn.Module):
+    def __init__(self, d_model=512, num_heads=8):
+        super().__init__()
+        self.d_k = d_model // num_heads
+        self.num_heads = num_heads
+        self.W_q = nn.Linear(d_model, d_model)
+        self.W_k = nn.Linear(d_model, d_model)
+        self.W_v = nn.Linear(d_model, d_model)
+        self.W_o = nn.Linear(d_model, d_model)
+
+    def forward(self, Q, K, V, mask=None):
+        batch = Q.size(0)
+        Q = self.W_q(Q).view(batch, -1, self.num_heads, self.d_k).transpose(1, 2)
+        K = self.W_k(K).view(batch, -1, self.num_heads, self.d_k).transpose(1, 2)
+        V = self.W_v(V).view(batch, -1, self.num_heads, self.d_k).transpose(1, 2)
+        out, _ = scaled_dot_product_attention(Q, K, V, mask)
+        out = out.transpose(1, 2).contiguous().view(batch, -1, self.num_heads * self.d_k)
+        return self.W_o(out)</code></pre>
+
+            <h3>Transformer Encoder Block (PyTorch)</h3>
+            <pre><code>class TransformerBlock(nn.Module):
+    def __init__(self, d_model=512, num_heads=8, d_ff=2048, dropout=0.1):
+        super().__init__()
+        self.attention = MultiHeadAttention(d_model, num_heads)
+        self.norm1 = nn.LayerNorm(d_model)
+        self.ffn = nn.Sequential(
+            nn.Linear(d_model, d_ff),
+            nn.ReLU(),
+            nn.Linear(d_ff, d_model),
+        )
+        self.norm2 = nn.LayerNorm(d_model)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x, mask=None):
+        attn_out = self.attention(x, x, x, mask)
+        x = self.norm1(x + self.dropout(attn_out))
+        ffn_out = self.ffn(x)
+        x = self.norm2(x + self.dropout(ffn_out))
+        return x</code></pre>
+
+            <h3>TensorFlow / Keras</h3>
+            <pre><code>import tensorflow as tf
+from tensorflow import keras
+
+# Using built-in MultiHeadAttention
+class TransformerBlock(keras.layers.Layer):
+    def __init__(self, d_model, num_heads, d_ff, dropout=0.1):
+        super().__init__()
+        self.att = keras.layers.MultiHeadAttention(
+            num_heads=num_heads, key_dim=d_model // num_heads
+        )
+        self.ffn = keras.Sequential([
+            keras.layers.Dense(d_ff, activation='relu'),
+            keras.layers.Dense(d_model),
+        ])
+        self.norm1 = keras.layers.LayerNormalization()
+        self.norm2 = keras.layers.LayerNormalization()
+        self.drop1 = keras.layers.Dropout(dropout)
+        self.drop2 = keras.layers.Dropout(dropout)
+
+    def call(self, x, training=False):
+        attn = self.att(x, x)
+        x = self.norm1(x + self.drop1(attn, training=training))
+        ffn = self.ffn(x)
+        return self.norm2(x + self.drop2(ffn, training=training))</code></pre>
+        </div>
+
+        <div class="arch-tab-content" id="tab-papers">
+            <h2>Key Papers</h2>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title"><a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">Attention Is All You Need</a></div>
+                    <div class="arch-paper__authors">Vaswani et al., 2017 &mdash; The original Transformer paper</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title"><a href="https://arxiv.org/abs/1810.04805" target="_blank" rel="noopener">BERT: Pre-training of Deep Bidirectional Transformers</a></div>
+                    <div class="arch-paper__authors">Devlin et al., 2018 &mdash; Bidirectional encoder for language understanding</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title"><a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noopener">Language Models are Few-Shot Learners (GPT-3)</a></div>
+                    <div class="arch-paper__authors">Brown et al., 2020 &mdash; Scaling autoregressive Transformers</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title"><a href="https://arxiv.org/abs/2010.11929" target="_blank" rel="noopener">An Image is Worth 16x16 Words (ViT)</a></div>
+                    <div class="arch-paper__authors">Dosovitskiy et al., 2020 &mdash; Applying Transformers to computer vision</div>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 2rem;">Related Architectures</h2>
+            <ul>
+                <li><strong>BERT</strong> &mdash; Encoder-only Transformer for language understanding</li>
+                <li><strong>GPT</strong> &mdash; Decoder-only Transformer for language generation</li>
+                <li><strong>Vision Transformer</strong> &mdash; Applies self-attention to image patches</li>
+                <li><strong>LSTM</strong> &mdash; The recurrent predecessor Transformers replaced for most NLP</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer class="arch-footer">
+        <a href="https://malphons.github.io/app_ma_neuralnet_zoo/">&#8592; Back to Neural Network Zoo</a>
+    </footer>
+
+    <script src="js/data.js"></script>
+    <script src="js/diagram.js"></script>
+    <script>
+        (function() {
+            var html = document.documentElement;
+            var toggleBtn = document.querySelector('.theme-toggle');
+            var saved = localStorage.getItem('nnzoo_theme');
+            if (saved) html.setAttribute('data-theme', saved);
+            else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) html.setAttribute('data-theme', 'light');
+            if (toggleBtn) toggleBtn.addEventListener('click', function() {
+                var current = html.getAttribute('data-theme') || 'dark';
+                var next = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem('nnzoo_theme', next);
+            });
+        })();
+        (function() {
+            var tabs = document.querySelectorAll('.arch-tab-btn');
+            tabs.forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(function(t) { t.classList.remove('arch-tab-btn--active'); });
+                    tab.classList.add('arch-tab-btn--active');
+                    document.querySelectorAll('.arch-tab-content').forEach(function(c) { c.classList.remove('arch-tab-content--active'); });
+                    var target = document.getElementById('tab-' + tab.getAttribute('data-tab'));
+                    if (target) target.classList.add('arch-tab-content--active');
+                });
+            });
+        })();
+        NNZoo.diagram.init('#diagram-container');
+        document.getElementById('btn-animate').addEventListener('click', function() { NNZoo.diagram.animateDataFlow(); });
+        document.getElementById('btn-reset').addEventListener('click', function() { NNZoo.diagram.resetZoom(); });
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(document.body, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
+            }
+        });
+    </script>
+</body>
+</html>

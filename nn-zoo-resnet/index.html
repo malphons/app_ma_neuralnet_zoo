@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResNet - Neural Network Zoo</title>
+    <meta name="description" content="Interactive deep-dive into Residual Networks (ResNet). Explore skip connections, residual blocks, math, and code.">
+    <link rel="stylesheet" href="https://malphons.github.io/app_ma_neuralnet_zoo/css/zoo.css">
+    <link rel="stylesheet" href="css/architecture.css">
+    <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+</head>
+<body class="arch-page">
+    <header class="arch-header">
+        <div class="arch-header__inner">
+            <a href="https://malphons.github.io/app_ma_neuralnet_zoo/" class="arch-header__back">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Back to Zoo
+            </a>
+            <span class="arch-header__title">Residual Network (ResNet)</span>
+            <div class="arch-header__actions">
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="theme-toggle__sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    <svg class="theme-toggle__moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="arch-diagram">
+        <div class="arch-diagram__canvas" id="diagram-container"></div>
+        <div class="arch-diagram__controls">
+            <button class="arch-diagram__btn" id="btn-animate" title="Animate data flow">&#9654; Animate</button>
+            <button class="arch-diagram__btn" id="btn-reset" title="Reset zoom">Reset</button>
+        </div>
+    </section>
+
+    <section class="arch-tabs">
+        <nav class="arch-tabs__nav">
+            <button class="arch-tab-btn arch-tab-btn--active" data-tab="overview">Overview</button>
+            <button class="arch-tab-btn" data-tab="architecture">Architecture</button>
+            <button class="arch-tab-btn" data-tab="math">Math</button>
+            <button class="arch-tab-btn" data-tab="code">Code</button>
+            <button class="arch-tab-btn" data-tab="papers">Papers</button>
+        </nav>
+
+        <div class="arch-tab-content arch-tab-content--active" id="tab-overview">
+            <h2>Overview</h2>
+            <p>The <strong>Residual Network (ResNet)</strong>, introduced by He et al. in 2015, solved the degradation problem in very deep networks by introducing <strong>skip connections</strong> (also called shortcut connections). These allow the input of a block to be added directly to its output, enabling networks with hundreds or even thousands of layers to train effectively.</p>
+            <p>The key insight is that it is easier for a network to learn a residual mapping F(x) = H(x) - x than the original mapping H(x). If the optimal transformation is close to identity, the network only needs to push the residual toward zero rather than learning the full identity mapping.</p>
+
+            <h3>Key Innovation</h3>
+            <p>Skip connections create an identity shortcut that bypasses one or more layers. Gradients can flow directly through these shortcuts during backpropagation, alleviating the vanishing gradient problem in deep networks. This enabled training networks 10-100x deeper than previous architectures.</p>
+
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li><strong>Image classification</strong> &mdash; state-of-the-art on ImageNet (ResNet-50, ResNet-101, ResNet-152)</li>
+                <li><strong>Object detection</strong> &mdash; backbone feature extractor for Faster R-CNN, YOLO</li>
+                <li><strong>Feature extraction</strong> &mdash; pre-trained ResNet features for downstream tasks</li>
+                <li><strong>Transfer learning</strong> &mdash; fine-tuning pre-trained models on new domains</li>
+                <li><strong>Medical imaging</strong> &mdash; adapted for 3D volumes and specialized domains</li>
+            </ul>
+
+            <h3>Limitations</h3>
+            <ul>
+                <li>Large model size for deeper variants (ResNet-152: 60M parameters)</li>
+                <li>Computationally expensive compared to lighter architectures (MobileNet, EfficientNet)</li>
+                <li>Skip connections add architectural complexity</li>
+                <li>Diminishing returns beyond certain depths for some tasks</li>
+            </ul>
+        </div>
+
+        <div class="arch-tab-content" id="tab-architecture">
+            <h2>Layer-by-Layer Breakdown</h2>
+            <p>Click on any layer in the diagram above to highlight its description below.</p>
+
+            <div class="arch-layer-card" data-layer="input">
+                <div class="arch-layer-card__name">Input</div>
+                <div class="arch-layer-card__detail">Shape: [batch_size, 3, 224, 224] (ImageNet)</div>
+                <p>RGB images, typically resized to 224x224 pixels. Data augmentation (random crop, horizontal flip, color jitter) is applied during training.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="stem">
+                <div class="arch-layer-card__name">Conv Stem (7x7 Conv + BN + ReLU + MaxPool)</div>
+                <div class="arch-layer-card__detail">Output: [batch, 64, 56, 56] &middot; Stride 2 conv + stride 2 pool</div>
+                <p>Initial feature extraction with a large 7x7 convolution (stride 2) followed by batch normalization, ReLU, and 3x3 max pooling (stride 2). This quickly reduces spatial dimensions by 4x before the residual blocks.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="res-block1">
+                <div class="arch-layer-card__name">Residual Block Stage 1</div>
+                <div class="arch-layer-card__detail">Conv(3x3) &rarr; BN &rarr; ReLU &rarr; Conv(3x3) &rarr; BN + Skip</div>
+                <p>Each residual block contains two 3x3 convolutions with batch norm and ReLU. The input is added to the output via the skip connection: y = F(x) + x. Multiple blocks are stacked (2-3 blocks per stage in ResNet-18/34).</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="res-block2">
+                <div class="arch-layer-card__name">Residual Block Stage 2 (Downsampling)</div>
+                <div class="arch-layer-card__detail">Stride-2 conv doubles channels, halves spatial dims</div>
+                <p>When spatial dimensions change, the skip connection uses a 1x1 convolution with stride 2 to match dimensions. This is called a "projection shortcut" as opposed to the identity shortcut used when dimensions match.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="res-block3">
+                <div class="arch-layer-card__name">Residual Block Stage 3</div>
+                <div class="arch-layer-card__detail">Deeper features &middot; Higher channel count</div>
+                <p>Later stages extract increasingly abstract and high-level features. Deeper ResNets (50+) use "bottleneck" blocks: 1x1 conv (reduce channels) &rarr; 3x3 conv &rarr; 1x1 conv (expand channels), reducing computation while maintaining representational power.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="pool">
+                <div class="arch-layer-card__name">Global Average Pooling</div>
+                <div class="arch-layer-card__detail">Spatial dims &rarr; 1x1 &middot; Shape: [batch, channels]</div>
+                <p>Reduces each channel's spatial map to a single value by averaging. This replaces fully-connected layers, dramatically reducing parameters and providing translation invariance. Outputs a fixed-size vector regardless of input spatial dimensions.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="output">
+                <div class="arch-layer-card__name">Output (Dense + Softmax)</div>
+                <div class="arch-layer-card__detail">Shape: [batch_size, num_classes]</div>
+                <p>A single fully-connected layer maps the pooled features to class logits. Softmax converts to probabilities for classification. For ImageNet: 1000-way classification.</p>
+            </div>
+        </div>
+
+        <div class="arch-tab-content" id="tab-math">
+            <h2>Key Equations</h2>
+
+            <h3>Residual Mapping</h3>
+            <div class="arch-equation">
+                $$\mathbf{y} = \mathcal{F}(\mathbf{x}, \{W_i\}) + \mathbf{x}$$
+            </div>
+            <p>The core idea: instead of learning H(x), learn the residual F(x) = H(x) - x. The skip connection adds the input x to the block's output F(x). If the optimal transformation is close to identity, it is easier to push F(x) toward zero.</p>
+
+            <h3>Basic Block (ResNet-18/34)</h3>
+            <div class="arch-equation">
+                $$\mathcal{F}(\mathbf{x}) = W_2 \cdot \text{ReLU}(\text{BN}(W_1 \cdot \mathbf{x}))$$
+                $$\mathbf{y} = \text{ReLU}(\mathcal{F}(\mathbf{x}) + \mathbf{x})$$
+            </div>
+
+            <h3>Bottleneck Block (ResNet-50/101/152)</h3>
+            <div class="arch-equation">
+                $$\mathcal{F}(\mathbf{x}) = W_3 \cdot \text{ReLU}(\text{BN}(W_2 \cdot \text{ReLU}(\text{BN}(W_1 \cdot \mathbf{x}))))$$
+            </div>
+            <p>1x1 conv (reduce) &rarr; 3x3 conv &rarr; 1x1 conv (expand). Reduces computation by factor of ~9 compared to two 3x3 convolutions.</p>
+
+            <h3>Projection Shortcut</h3>
+            <div class="arch-equation">
+                $$\mathbf{y} = \mathcal{F}(\mathbf{x}) + W_s \mathbf{x}$$
+            </div>
+            <p>When input and output dimensions differ, a 1x1 convolution W_s with appropriate stride is used to match dimensions for the addition.</p>
+
+            <h3>Batch Normalization</h3>
+            <div class="arch-equation">
+                $$\hat{x}_i = \frac{x_i - \mu_B}{\sqrt{\sigma_B^2 + \epsilon}} \cdot \gamma + \beta$$
+            </div>
+            <p>Normalizes activations within each mini-batch. Learnable scale (&gamma;) and shift (&beta;) parameters preserve representational power.</p>
+        </div>
+
+        <div class="arch-tab-content" id="tab-code">
+            <h2>Implementation</h2>
+
+            <h3>PyTorch - Basic Residual Block</h3>
+            <pre><code>import torch
+import torch.nn as nn
+
+class BasicBlock(nn.Module):
+    def __init__(self, in_channels, out_channels, stride=1):
+        super().__init__()
+        self.conv1 = nn.Conv2d(in_channels, out_channels, 3,
+                               stride=stride, padding=1, bias=False)
+        self.bn1 = nn.BatchNorm2d(out_channels)
+        self.conv2 = nn.Conv2d(out_channels, out_channels, 3,
+                               padding=1, bias=False)
+        self.bn2 = nn.BatchNorm2d(out_channels)
+
+        self.shortcut = nn.Sequential()
+        if stride != 1 or in_channels != out_channels:
+            self.shortcut = nn.Sequential(
+                nn.Conv2d(in_channels, out_channels, 1,
+                         stride=stride, bias=False),
+                nn.BatchNorm2d(out_channels)
+            )
+
+    def forward(self, x):
+        out = torch.relu(self.bn1(self.conv1(x)))
+        out = self.bn2(self.conv2(out))
+        out += self.shortcut(x)   # skip connection
+        return torch.relu(out)</code></pre>
+
+            <h3>PyTorch - Simple ResNet</h3>
+            <pre><code>class SimpleResNet(nn.Module):
+    def __init__(self, num_classes=10):
+        super().__init__()
+        self.stem = nn.Sequential(
+            nn.Conv2d(3, 64, 7, stride=2, padding=3, bias=False),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
+            nn.MaxPool2d(3, stride=2, padding=1),
+        )
+        self.layer1 = self._make_layer(64, 64, 2, stride=1)
+        self.layer2 = self._make_layer(64, 128, 2, stride=2)
+        self.layer3 = self._make_layer(128, 256, 2, stride=2)
+        self.pool = nn.AdaptiveAvgPool2d(1)
+        self.fc = nn.Linear(256, num_classes)
+
+    def _make_layer(self, in_ch, out_ch, blocks, stride):
+        layers = [BasicBlock(in_ch, out_ch, stride)]
+        for _ in range(1, blocks):
+            layers.append(BasicBlock(out_ch, out_ch))
+        return nn.Sequential(*layers)
+
+    def forward(self, x):
+        x = self.stem(x)
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.pool(x).flatten(1)
+        return self.fc(x)
+
+model = SimpleResNet(num_classes=10)</code></pre>
+
+            <h3>TensorFlow / Keras</h3>
+            <pre><code>import tensorflow as tf
+from tensorflow import keras
+
+def residual_block(x, filters, stride=1):
+    shortcut = x
+    y = keras.layers.Conv2D(filters, 3, strides=stride,
+                            padding='same', use_bias=False)(x)
+    y = keras.layers.BatchNormalization()(y)
+    y = keras.layers.ReLU()(y)
+    y = keras.layers.Conv2D(filters, 3, padding='same',
+                            use_bias=False)(y)
+    y = keras.layers.BatchNormalization()(y)
+
+    if stride != 1 or x.shape[-1] != filters:
+        shortcut = keras.layers.Conv2D(
+            filters, 1, strides=stride, use_bias=False)(x)
+        shortcut = keras.layers.BatchNormalization()(shortcut)
+
+    y = keras.layers.Add()([y, shortcut])
+    return keras.layers.ReLU()(y)
+
+# Build model
+inputs = keras.Input(shape=(224, 224, 3))
+x = keras.layers.Conv2D(64, 7, strides=2, padding='same')(inputs)
+x = keras.layers.BatchNormalization()(x)
+x = keras.layers.ReLU()(x)
+x = keras.layers.MaxPool2D(3, strides=2, padding='same')(x)
+for _ in range(2): x = residual_block(x, 64)
+x = residual_block(x, 128, stride=2)
+for _ in range(1): x = residual_block(x, 128)
+x = keras.layers.GlobalAveragePooling2D()(x)
+outputs = keras.layers.Dense(10, activation='softmax')(x)
+model = keras.Model(inputs, outputs)</code></pre>
+        </div>
+
+        <div class="arch-tab-content" id="tab-papers">
+            <h2>Key Papers</h2>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title"><a href="https://arxiv.org/abs/1512.03385" target="_blank" rel="noopener">Deep Residual Learning for Image Recognition</a></div>
+                    <div class="arch-paper__authors">He, Zhang, Ren &amp; Sun, 2015 &mdash; The original ResNet paper (CVPR 2016 Best Paper)</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title"><a href="https://arxiv.org/abs/1603.05027" target="_blank" rel="noopener">Identity Mappings in Deep Residual Networks</a></div>
+                    <div class="arch-paper__authors">He, Zhang, Ren &amp; Sun, 2016 &mdash; Pre-activation ResNet (improved ordering of BN/ReLU)</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title"><a href="https://arxiv.org/abs/1608.06993" target="_blank" rel="noopener">Densely Connected Convolutional Networks (DenseNet)</a></div>
+                    <div class="arch-paper__authors">Huang et al., 2016 &mdash; Extension of skip connections: connect every layer to every subsequent layer</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title"><a href="https://arxiv.org/abs/1905.11946" target="_blank" rel="noopener">EfficientNet: Rethinking Model Scaling for CNNs</a></div>
+                    <div class="arch-paper__authors">Tan &amp; Le, 2019 &mdash; Compound scaling of depth, width, and resolution</div>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 2rem;">Related Architectures</h2>
+            <ul>
+                <li><strong>CNN</strong> &mdash; The foundation that ResNet builds upon with skip connections</li>
+                <li><strong>DenseNet</strong> &mdash; Dense skip connections between all layers</li>
+                <li><strong>Transformer</strong> &mdash; Also uses residual connections in every block</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer class="arch-footer">
+        <a href="https://malphons.github.io/app_ma_neuralnet_zoo/">&#8592; Back to Neural Network Zoo</a>
+    </footer>
+
+    <script src="js/data.js"></script>
+    <script src="js/diagram.js"></script>
+    <script>
+        (function() {
+            var html = document.documentElement;
+            var toggleBtn = document.querySelector('.theme-toggle');
+            var saved = localStorage.getItem('nnzoo_theme');
+            if (saved) html.setAttribute('data-theme', saved);
+            else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) html.setAttribute('data-theme', 'light');
+            if (toggleBtn) toggleBtn.addEventListener('click', function() {
+                var current = html.getAttribute('data-theme') || 'dark';
+                var next = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem('nnzoo_theme', next);
+            });
+        })();
+        (function() {
+            var tabs = document.querySelectorAll('.arch-tab-btn');
+            tabs.forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(function(t) { t.classList.remove('arch-tab-btn--active'); });
+                    tab.classList.add('arch-tab-btn--active');
+                    document.querySelectorAll('.arch-tab-content').forEach(function(c) { c.classList.remove('arch-tab-content--active'); });
+                    var target = document.getElementById('tab-' + tab.getAttribute('data-tab'));
+                    if (target) target.classList.add('arch-tab-content--active');
+                });
+            });
+        })();
+        NNZoo.diagram.init('#diagram-container');
+        document.getElementById('btn-animate').addEventListener('click', function() { NNZoo.diagram.animateDataFlow(); });
+        document.getElementById('btn-reset').addEventListener('click', function() { NNZoo.diagram.resetZoom(); });
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(document.body, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
+            }
+        });
+    </script>
+</body>
+</html>

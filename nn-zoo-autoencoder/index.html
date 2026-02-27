@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autoencoder - Neural Network Zoo</title>
+    <meta name="description" content="Interactive deep-dive into Autoencoder architecture. Explore encoder-decoder structure, latent space, math, and code.">
+    <link rel="stylesheet" href="https://malphons.github.io/app_ma_neuralnet_zoo/css/zoo.css">
+    <link rel="stylesheet" href="css/architecture.css">
+    <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+</head>
+<body class="arch-page">
+    <header class="arch-header">
+        <div class="arch-header__inner">
+            <a href="https://malphons.github.io/app_ma_neuralnet_zoo/" class="arch-header__back">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Back to Zoo
+            </a>
+            <span class="arch-header__title">Autoencoder</span>
+            <div class="arch-header__actions">
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="theme-toggle__sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    <svg class="theme-toggle__moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="arch-diagram">
+        <div class="arch-diagram__canvas" id="diagram-container"></div>
+        <div class="arch-diagram__controls">
+            <button class="arch-diagram__btn" id="btn-animate" title="Animate data flow">&#9654; Animate</button>
+            <button class="arch-diagram__btn" id="btn-reset" title="Reset zoom">Reset</button>
+        </div>
+    </section>
+
+    <section class="arch-tabs">
+        <nav class="arch-tabs__nav">
+            <button class="arch-tab-btn arch-tab-btn--active" data-tab="overview">Overview</button>
+            <button class="arch-tab-btn" data-tab="architecture">Architecture</button>
+            <button class="arch-tab-btn" data-tab="math">Math</button>
+            <button class="arch-tab-btn" data-tab="code">Code</button>
+            <button class="arch-tab-btn" data-tab="papers">Papers</button>
+        </nav>
+
+        <div class="arch-tab-content arch-tab-content--active" id="tab-overview">
+            <h2>Overview</h2>
+            <p>An <strong>Autoencoder</strong> is a neural network trained to reconstruct its input through a bottleneck layer, forcing it to learn a compressed representation. First explored by Rumelhart, Hinton, and Williams (1986) as a way to learn internal representations, autoencoders have become fundamental to unsupervised feature learning and generative modeling.</p>
+            <p>The architecture consists of two mirrored halves: an <strong>encoder</strong> that compresses the input into a low-dimensional latent space, and a <strong>decoder</strong> that reconstructs the original input from this compressed representation. The bottleneck forces the network to capture only the most salient features.</p>
+
+            <h3>Key Innovation</h3>
+            <p>By constraining the network to pass information through a bottleneck, autoencoders learn meaningful data representations without labeled training data. Variants like denoising and variational autoencoders extend this idea to robust feature learning and generative modeling.</p>
+
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li><strong>Dimensionality reduction</strong> &mdash; non-linear alternative to PCA</li>
+                <li><strong>Denoising</strong> &mdash; learning to reconstruct clean data from noisy inputs</li>
+                <li><strong>Anomaly detection</strong> &mdash; high reconstruction error signals anomalies</li>
+                <li><strong>Feature learning</strong> &mdash; latent representations for downstream tasks</li>
+                <li><strong>Image compression</strong> &mdash; learned lossy compression schemes</li>
+            </ul>
+
+            <h3>Limitations</h3>
+            <ul>
+                <li>May learn trivial identity mapping if bottleneck is too wide</li>
+                <li>Standard autoencoders cannot generate new data (unlike VAEs)</li>
+                <li>Reconstruction loss may not capture perceptual similarity</li>
+                <li>Latent space may not be smooth or structured without regularization</li>
+            </ul>
+        </div>
+
+        <div class="arch-tab-content" id="tab-architecture">
+            <h2>Layer-by-Layer Breakdown</h2>
+            <p>Click on any layer in the diagram above to highlight its description below.</p>
+
+            <div class="arch-layer-card" data-layer="input">
+                <div class="arch-layer-card__name">Input Layer</div>
+                <div class="arch-layer-card__detail">Shape: [batch_size, input_dim]</div>
+                <p>The original data to be encoded. For images, this is typically a flattened pixel vector (e.g., 784 for MNIST 28x28). The goal is to reconstruct this exactly at the output.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="encoder">
+                <div class="arch-layer-card__name">Encoder (Dense + ReLU)</div>
+                <div class="arch-layer-card__detail">Progressively reduces dimensionality</div>
+                <p>One or more dense layers that progressively compress the input. Each layer reduces the dimension, forcing the network to learn which features are most important to preserve. Deeper encoders can learn more abstract representations.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="bottleneck">
+                <div class="arch-layer-card__name">Latent Space (Bottleneck)</div>
+                <div class="arch-layer-card__detail">Shape: [batch_size, latent_dim] &middot; The compressed representation</div>
+                <p>The narrowest layer, representing the compressed encoding. The dimensionality of this layer (latent_dim) controls the compression ratio. Smaller values force more compression but may lose detail. This is the learned representation of the input.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="decoder">
+                <div class="arch-layer-card__name">Decoder (Dense + ReLU)</div>
+                <div class="arch-layer-card__detail">Mirrors the encoder architecture</div>
+                <p>Symmetric to the encoder, the decoder progressively expands the latent representation back to the original dimensionality. It learns to reconstruct the input from the compressed code.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="output">
+                <div class="arch-layer-card__name">Output (Reconstruction)</div>
+                <div class="arch-layer-card__detail">Shape: [batch_size, input_dim] &middot; Sigmoid activation</div>
+                <p>The reconstructed output, same dimensionality as the input. Sigmoid activation is used for normalized inputs (0-1 range). The difference between input and output is the reconstruction error, which drives training.</p>
+            </div>
+        </div>
+
+        <div class="arch-tab-content" id="tab-math">
+            <h2>Key Equations</h2>
+
+            <h3>Encoder</h3>
+            <div class="arch-equation">
+                $$\mathbf{z} = f_\theta(\mathbf{x}) = \sigma(\mathbf{W}_e \mathbf{x} + \mathbf{b}_e)$$
+            </div>
+            <p>Maps input x to latent representation z through learnable weights W_e and bias b_e with activation &sigma;.</p>
+
+            <h3>Decoder</h3>
+            <div class="arch-equation">
+                $$\hat{\mathbf{x}} = g_\phi(\mathbf{z}) = \sigma(\mathbf{W}_d \mathbf{z} + \mathbf{b}_d)$$
+            </div>
+            <p>Reconstructs input from latent code z. The output should match the original input as closely as possible.</p>
+
+            <h3>Reconstruction Loss (MSE)</h3>
+            <div class="arch-equation">
+                $$\mathcal{L} = \frac{1}{N}\sum_{i=1}^{N} \|\mathbf{x}_i - \hat{\mathbf{x}}_i\|^2$$
+            </div>
+            <p>Mean squared error between original input and reconstruction. Minimizing this forces the network to learn useful compressed representations.</p>
+
+            <h3>Binary Cross-Entropy Loss (alternative)</h3>
+            <div class="arch-equation">
+                $$\mathcal{L} = -\frac{1}{N}\sum_{i=1}^{N}\left[\mathbf{x}_i \log(\hat{\mathbf{x}}_i) + (1-\mathbf{x}_i)\log(1-\hat{\mathbf{x}}_i)\right]$$
+            </div>
+            <p>Used when inputs are binary or normalized to [0, 1] (common for image data with sigmoid output).</p>
+
+            <h3>Compression Ratio</h3>
+            <div class="arch-equation">
+                $$\text{ratio} = \frac{d_{input}}{d_{latent}}$$
+            </div>
+            <p>The ratio of input dimensionality to latent dimensionality. Higher ratios mean more compression.</p>
+        </div>
+
+        <div class="arch-tab-content" id="tab-code">
+            <h2>Implementation</h2>
+
+            <h3>PyTorch</h3>
+            <pre><code>import torch
+import torch.nn as nn
+
+class Autoencoder(nn.Module):
+    def __init__(self, input_dim=784, latent_dim=32):
+        super().__init__()
+        self.encoder = nn.Sequential(
+            nn.Linear(input_dim, 256),
+            nn.ReLU(),
+            nn.Linear(256, 64),
+            nn.ReLU(),
+            nn.Linear(64, latent_dim),
+        )
+        self.decoder = nn.Sequential(
+            nn.Linear(latent_dim, 64),
+            nn.ReLU(),
+            nn.Linear(64, 256),
+            nn.ReLU(),
+            nn.Linear(256, input_dim),
+            nn.Sigmoid(),
+        )
+
+    def forward(self, x):
+        z = self.encoder(x)
+        reconstructed = self.decoder(z)
+        return reconstructed
+
+    def encode(self, x):
+        return self.encoder(x)
+
+model = Autoencoder()
+x = torch.randn(32, 784)  # batch of 32 flattened MNIST images
+output = model(x)           # shape: [32, 784]
+loss = nn.MSELoss()(output, x)</code></pre>
+
+            <h3>TensorFlow / Keras</h3>
+            <pre><code>import tensorflow as tf
+from tensorflow import keras
+
+encoder = keras.Sequential([
+    keras.layers.Dense(256, activation='relu', input_shape=(784,)),
+    keras.layers.Dense(64, activation='relu'),
+    keras.layers.Dense(32),  # latent space
+])
+
+decoder = keras.Sequential([
+    keras.layers.Dense(64, activation='relu', input_shape=(32,)),
+    keras.layers.Dense(256, activation='relu'),
+    keras.layers.Dense(784, activation='sigmoid'),
+])
+
+# Combined model
+inputs = keras.Input(shape=(784,))
+z = encoder(inputs)
+reconstructed = decoder(z)
+autoencoder = keras.Model(inputs, reconstructed)
+
+autoencoder.compile(optimizer='adam', loss='mse')</code></pre>
+
+            <h3>NumPy (From Scratch)</h3>
+            <pre><code>import numpy as np
+
+def relu(x): return np.maximum(0, x)
+def sigmoid(x): return 1 / (1 + np.exp(-np.clip(x, -500, 500)))
+
+class SimpleAutoencoder:
+    def __init__(self, dims):
+        # dims = [784, 256, 64, 32, 64, 256, 784]
+        self.weights = []
+        self.biases = []
+        for i in range(len(dims) - 1):
+            w = np.random.randn(dims[i], dims[i+1]) * 0.01
+            b = np.zeros((1, dims[i+1]))
+            self.weights.append(w)
+            self.biases.append(b)
+
+    def forward(self, x):
+        a = x
+        mid = len(self.weights) // 2
+        for i, (w, b) in enumerate(zip(self.weights, self.biases)):
+            z = a @ w + b
+            if i == len(self.weights) - 1:
+                a = sigmoid(z)
+            else:
+                a = relu(z)
+        return a
+
+ae = SimpleAutoencoder([784, 256, 64, 32, 64, 256, 784])
+x = np.random.rand(1, 784)
+reconstructed = ae.forward(x)</code></pre>
+        </div>
+
+        <div class="arch-tab-content" id="tab-papers">
+            <h2>Key Papers</h2>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title"><a href="https://doi.org/10.1038/323533a0" target="_blank" rel="noopener">Learning representations by back-propagating errors</a></div>
+                    <div class="arch-paper__authors">Rumelhart, Hinton &amp; Williams, 1986 &mdash; Introduced autoencoders as a way to learn internal representations</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title"><a href="https://www.jmlr.org/papers/v11/vincent10a.html" target="_blank" rel="noopener">Stacked Denoising Autoencoders</a></div>
+                    <div class="arch-paper__authors">Vincent et al., 2010 &mdash; Training autoencoders to denoise corrupted inputs for robust features</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title"><a href="https://arxiv.org/abs/1312.6114" target="_blank" rel="noopener">Auto-Encoding Variational Bayes</a></div>
+                    <div class="arch-paper__authors">Kingma &amp; Welling, 2013 &mdash; Variational Autoencoder (VAE) for generative modeling</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title"><a href="https://doi.org/10.1126/science.1127647" target="_blank" rel="noopener">Reducing the Dimensionality of Data with Neural Networks</a></div>
+                    <div class="arch-paper__authors">Hinton &amp; Salakhutdinov, 2006 &mdash; Deep autoencoders outperforming PCA</div>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 2rem;">Related Architectures</h2>
+            <ul>
+                <li><strong>VAE</strong> &mdash; Adds probabilistic latent space for generative capabilities</li>
+                <li><strong>GAN</strong> &mdash; Alternative generative approach using adversarial training</li>
+                <li><strong>Perceptron / MLP</strong> &mdash; The building block used in encoder and decoder layers</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer class="arch-footer">
+        <a href="https://malphons.github.io/app_ma_neuralnet_zoo/">&#8592; Back to Neural Network Zoo</a>
+    </footer>
+
+    <script src="js/data.js"></script>
+    <script src="js/diagram.js"></script>
+    <script>
+        (function() {
+            var html = document.documentElement;
+            var toggleBtn = document.querySelector('.theme-toggle');
+            var saved = localStorage.getItem('nnzoo_theme');
+            if (saved) html.setAttribute('data-theme', saved);
+            else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) html.setAttribute('data-theme', 'light');
+            if (toggleBtn) toggleBtn.addEventListener('click', function() {
+                var current = html.getAttribute('data-theme') || 'dark';
+                var next = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem('nnzoo_theme', next);
+            });
+        })();
+        (function() {
+            var tabs = document.querySelectorAll('.arch-tab-btn');
+            tabs.forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(function(t) { t.classList.remove('arch-tab-btn--active'); });
+                    tab.classList.add('arch-tab-btn--active');
+                    document.querySelectorAll('.arch-tab-content').forEach(function(c) { c.classList.remove('arch-tab-content--active'); });
+                    var target = document.getElementById('tab-' + tab.getAttribute('data-tab'));
+                    if (target) target.classList.add('arch-tab-content--active');
+                });
+            });
+        })();
+        NNZoo.diagram.init('#diagram-container');
+        document.getElementById('btn-animate').addEventListener('click', function() { NNZoo.diagram.animateDataFlow(); });
+        document.getElementById('btn-reset').addEventListener('click', function() { NNZoo.diagram.resetZoom(); });
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(document.body, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
+            }
+        });
+    </script>
+</body>
+</html>

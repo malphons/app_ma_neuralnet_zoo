@@ -1,0 +1,82 @@
+<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+  <!-- GAN Thumbnail: Generator (left) vs Discriminator (right) -->
+
+  <!-- Generator side -->
+  <!-- Noise input -->
+  <circle class="nn-node" cx="30" cy="70" r="8" fill="#bc8cff" opacity="0.3"/>
+  <circle class="nn-node" cx="30" cy="110" r="8" fill="#bc8cff" opacity="0.3"/>
+  <circle class="nn-node" cx="30" cy="150" r="8" fill="#bc8cff" opacity="0.3"/>
+
+  <!-- Generator hidden -->
+  <circle class="nn-node" cx="90" cy="60" r="8" fill="#bc8cff" opacity="0.5"/>
+  <circle class="nn-node" cx="90" cy="90" r="8" fill="#bc8cff" opacity="0.5"/>
+  <circle class="nn-node" cx="90" cy="120" r="8" fill="#bc8cff" opacity="0.5"/>
+  <circle class="nn-node" cx="90" cy="150" r="8" fill="#bc8cff" opacity="0.5"/>
+  <circle class="nn-node" cx="90" cy="180" r="8" fill="#bc8cff" opacity="0.5"/>
+
+  <!-- Generator output (fake data) -->
+  <circle class="nn-node" cx="155" cy="65" r="8" fill="#bc8cff" opacity="0.7"/>
+  <circle class="nn-node" cx="155" cy="95" r="8" fill="#bc8cff" opacity="0.7"/>
+  <circle class="nn-node" cx="155" cy="125" r="8" fill="#bc8cff" opacity="0.7"/>
+  <circle class="nn-node" cx="155" cy="155" r="8" fill="#bc8cff" opacity="0.7"/>
+
+  <!-- Generator connections -->
+  <g class="nn-layer">
+    <line class="nn-edge" x1="38" y1="70" x2="82" y2="60" stroke="#bc8cff" stroke-width="1" opacity="0.15"/>
+    <line class="nn-edge" x1="38" y1="70" x2="82" y2="90" stroke="#bc8cff" stroke-width="1" opacity="0.18"/>
+    <line class="nn-edge" x1="38" y1="110" x2="82" y2="90" stroke="#bc8cff" stroke-width="1" opacity="0.15"/>
+    <line class="nn-edge" x1="38" y1="110" x2="82" y2="120" stroke="#bc8cff" stroke-width="1" opacity="0.2"/>
+    <line class="nn-edge" x1="38" y1="110" x2="82" y2="150" stroke="#bc8cff" stroke-width="1" opacity="0.15"/>
+    <line class="nn-edge" x1="38" y1="150" x2="82" y2="150" stroke="#bc8cff" stroke-width="1" opacity="0.18"/>
+    <line class="nn-edge" x1="38" y1="150" x2="82" y2="180" stroke="#bc8cff" stroke-width="1" opacity="0.15"/>
+    <line class="nn-edge" x1="98" y1="60" x2="147" y2="65" stroke="#bc8cff" stroke-width="1" opacity="0.18"/>
+    <line class="nn-edge" x1="98" y1="90" x2="147" y2="95" stroke="#bc8cff" stroke-width="1" opacity="0.2"/>
+    <line class="nn-edge" x1="98" y1="120" x2="147" y2="125" stroke="#bc8cff" stroke-width="1" opacity="0.18"/>
+    <line class="nn-edge" x1="98" y1="150" x2="147" y2="155" stroke="#bc8cff" stroke-width="1" opacity="0.15"/>
+    <line class="nn-edge" x1="98" y1="180" x2="147" y2="155" stroke="#bc8cff" stroke-width="1" opacity="0.12"/>
+  </g>
+
+  <!-- Arrow from Generator to Discriminator -->
+  <line class="nn-edge" x1="170" y1="110" x2="230" y2="110" stroke="#bc8cff" stroke-width="2" opacity="0.4"/>
+  <polygon points="228,104 240,110 228,116" fill="#bc8cff" opacity="0.4"/>
+
+  <!-- Discriminator side -->
+  <!-- Disc input -->
+  <circle class="nn-node" cx="250" cy="65" r="8" fill="#bc8cff" opacity="0.55"/>
+  <circle class="nn-node" cx="250" cy="95" r="8" fill="#bc8cff" opacity="0.55"/>
+  <circle class="nn-node" cx="250" cy="125" r="8" fill="#bc8cff" opacity="0.55"/>
+  <circle class="nn-node" cx="250" cy="155" r="8" fill="#bc8cff" opacity="0.55"/>
+
+  <!-- Disc hidden -->
+  <circle class="nn-node" cx="315" cy="80" r="8" fill="#bc8cff" opacity="0.65"/>
+  <circle class="nn-node" cx="315" cy="110" r="8" fill="#bc8cff" opacity="0.65"/>
+  <circle class="nn-node" cx="315" cy="140" r="8" fill="#bc8cff" opacity="0.65"/>
+
+  <!-- Disc output -->
+  <circle class="nn-node" cx="375" cy="110" r="10" fill="#bc8cff" opacity="0.9"/>
+
+  <!-- Discriminator connections -->
+  <g class="nn-layer">
+    <line class="nn-edge" x1="258" y1="65" x2="307" y2="80" stroke="#bc8cff" stroke-width="1" opacity="0.2"/>
+    <line class="nn-edge" x1="258" y1="95" x2="307" y2="80" stroke="#bc8cff" stroke-width="1" opacity="0.18"/>
+    <line class="nn-edge" x1="258" y1="95" x2="307" y2="110" stroke="#bc8cff" stroke-width="1" opacity="0.2"/>
+    <line class="nn-edge" x1="258" y1="125" x2="307" y2="110" stroke="#bc8cff" stroke-width="1" opacity="0.2"/>
+    <line class="nn-edge" x1="258" y1="125" x2="307" y2="140" stroke="#bc8cff" stroke-width="1" opacity="0.18"/>
+    <line class="nn-edge" x1="258" y1="155" x2="307" y2="140" stroke="#bc8cff" stroke-width="1" opacity="0.2"/>
+    <line class="nn-edge" x1="323" y1="80" x2="367" y2="110" stroke="#bc8cff" stroke-width="1.2" opacity="0.25"/>
+    <line class="nn-edge" x1="323" y1="110" x2="367" y2="110" stroke="#bc8cff" stroke-width="1.2" opacity="0.3"/>
+    <line class="nn-edge" x1="323" y1="140" x2="367" y2="110" stroke="#bc8cff" stroke-width="1.2" opacity="0.25"/>
+  </g>
+
+  <!-- Labels -->
+  <text class="nn-label" x="30" y="210" text-anchor="middle" fill="#bc8cff" font-size="8" opacity="0.4" font-family="sans-serif">Noise</text>
+  <text class="nn-label" x="90" y="210" text-anchor="middle" fill="#bc8cff" font-size="8" opacity="0.4" font-family="sans-serif">G Hidden</text>
+  <text class="nn-label" x="155" y="210" text-anchor="middle" fill="#bc8cff" font-size="8" opacity="0.4" font-family="sans-serif">Fake</text>
+  <text class="nn-label" x="250" y="210" text-anchor="middle" fill="#bc8cff" font-size="8" opacity="0.4" font-family="sans-serif">D Input</text>
+  <text class="nn-label" x="315" y="210" text-anchor="middle" fill="#bc8cff" font-size="8" opacity="0.4" font-family="sans-serif">D Hidden</text>
+  <text class="nn-label" x="375" y="210" text-anchor="middle" fill="#bc8cff" font-size="8" opacity="0.5" font-family="sans-serif">Real/Fake</text>
+
+  <!-- G and D labels -->
+  <text x="92" y="240" text-anchor="middle" fill="#bc8cff" font-size="11" opacity="0.6" font-family="sans-serif" font-weight="bold">Generator</text>
+  <text x="315" y="240" text-anchor="middle" fill="#bc8cff" font-size="11" opacity="0.6" font-family="sans-serif" font-weight="bold">Discriminator</text>
+</svg>

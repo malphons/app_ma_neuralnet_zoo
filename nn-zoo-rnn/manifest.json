@@ -1,0 +1,18 @@
+{
+    "schema_version": "1.0",
+    "id": "rnn",
+    "name": "Recurrent Neural Network",
+    "short_description": "Sequential processing with hidden state memory, enabling the network to model temporal dependencies in data.",
+    "category": "recurrent",
+    "tags": ["sequential", "hidden-state", "time-series", "temporal", "recurrence"],
+    "year_introduced": 1986,
+    "key_paper": "Rumelhart et al., 'Learning representations by back-propagating errors'",
+    "paper_url": "https://doi.org/10.1038/323533a0",
+    "complexity": "intermediate",
+    "color_accent": "#3fb950",
+    "use_cases": ["time series prediction", "language modeling", "speech recognition"],
+    "layer_types": ["input", "recurrent", "dense", "output"],
+    "related_architectures": ["lstm", "gru", "seq2seq"],
+    "interactive_features": ["layer-toggle", "data-flow"],
+    "last_updated": "2026-02-26"
+}

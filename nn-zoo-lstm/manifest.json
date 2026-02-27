@@ -1,0 +1,18 @@
+{
+    "schema_version": "1.0",
+    "id": "lstm",
+    "name": "Long Short-Term Memory",
+    "short_description": "Gated recurrent architecture with cell state and forget/input/output gates, solving the vanishing gradient problem.",
+    "category": "recurrent",
+    "tags": ["gates", "cell-state", "long-range-dependencies", "vanishing-gradient", "memory"],
+    "year_introduced": 1997,
+    "key_paper": "Hochreiter & Schmidhuber, 'Long Short-Term Memory'",
+    "paper_url": "https://doi.org/10.1162/neco.1997.9.8.1735",
+    "complexity": "intermediate",
+    "color_accent": "#3fb950",
+    "use_cases": ["machine translation", "text generation", "speech recognition", "time series"],
+    "layer_types": ["input", "lstm-cell", "dense", "output"],
+    "related_architectures": ["rnn", "gru", "seq2seq"],
+    "interactive_features": ["layer-toggle", "data-flow", "weight-visualization"],
+    "last_updated": "2026-02-26"
+}

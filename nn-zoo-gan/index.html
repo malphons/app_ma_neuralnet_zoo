@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAN - Neural Network Zoo</title>
+    <meta name="description" content="Interactive deep-dive into Generative Adversarial Networks. Explore generator, discriminator, adversarial training, math, and code.">
+    <link rel="stylesheet" href="https://malphons.github.io/app_ma_neuralnet_zoo/css/zoo.css">
+    <link rel="stylesheet" href="css/architecture.css">
+    <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+</head>
+<body class="arch-page">
+    <header class="arch-header">
+        <div class="arch-header__inner">
+            <a href="https://malphons.github.io/app_ma_neuralnet_zoo/" class="arch-header__back">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Back to Zoo
+            </a>
+            <span class="arch-header__title">Generative Adversarial Network</span>
+            <div class="arch-header__actions">
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="theme-toggle__sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    <svg class="theme-toggle__moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="arch-diagram">
+        <div class="arch-diagram__canvas" id="diagram-container"></div>
+        <div class="arch-diagram__controls">
+            <button class="arch-diagram__btn" id="btn-animate" title="Animate data flow">&#9654; Animate</button>
+            <button class="arch-diagram__btn" id="btn-reset" title="Reset zoom">Reset</button>
+        </div>
+    </section>
+
+    <section class="arch-tabs">
+        <nav class="arch-tabs__nav">
+            <button class="arch-tab-btn arch-tab-btn--active" data-tab="overview">Overview</button>
+            <button class="arch-tab-btn" data-tab="architecture">Architecture</button>
+            <button class="arch-tab-btn" data-tab="math">Math</button>
+            <button class="arch-tab-btn" data-tab="code">Code</button>
+            <button class="arch-tab-btn" data-tab="papers">Papers</button>
+        </nav>
+
+        <div class="arch-tab-content arch-tab-content--active" id="tab-overview">
+            <h2>Overview</h2>
+            <p>The <strong>Generative Adversarial Network (GAN)</strong>, introduced by Goodfellow et al. in 2014, revolutionized generative modeling through an adversarial training framework. Two neural networks &mdash; a <strong>Generator</strong> and a <strong>Discriminator</strong> &mdash; are trained simultaneously in a minimax game.</p>
+            <p>The Generator learns to produce realistic data from random noise, while the Discriminator learns to distinguish real data from generated fakes. Through this adversarial process, the Generator progressively improves until its outputs are indistinguishable from real data.</p>
+
+            <h3>Key Innovation</h3>
+            <p>The adversarial training framework eliminates the need for explicit density estimation or reconstruction losses. The Discriminator provides a learned loss function that adapts as the Generator improves, enabling the generation of remarkably realistic data.</p>
+
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li><strong>Image generation</strong> &mdash; photorealistic face synthesis, art creation</li>
+                <li><strong>Style transfer</strong> &mdash; converting images between domains (CycleGAN)</li>
+                <li><strong>Data augmentation</strong> &mdash; generating synthetic training data</li>
+                <li><strong>Super-resolution</strong> &mdash; enhancing image resolution (SRGAN)</li>
+                <li><strong>Image inpainting</strong> &mdash; filling in missing regions of images</li>
+            </ul>
+
+            <h3>Limitations</h3>
+            <ul>
+                <li>Training instability &mdash; mode collapse, vanishing gradients</li>
+                <li>No explicit density estimation (cannot evaluate likelihood)</li>
+                <li>Difficult to evaluate generation quality objectively</li>
+                <li>Balancing Generator and Discriminator training is challenging</li>
+            </ul>
+        </div>
+
+        <div class="arch-tab-content" id="tab-architecture">
+            <h2>Layer-by-Layer Breakdown</h2>
+            <p>Click on any layer in the diagram above to highlight its description below.</p>
+
+            <div class="arch-layer-card" data-layer="noise">
+                <div class="arch-layer-card__name">Noise Input (z)</div>
+                <div class="arch-layer-card__detail">Shape: [batch_size, latent_dim] &middot; Sampled from N(0, 1)</div>
+                <p>Random noise vector sampled from a prior distribution (typically Gaussian). This is the seed from which the Generator creates fake data. Different noise vectors produce different generated samples.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="g-hidden">
+                <div class="arch-layer-card__name">Generator Hidden Layers</div>
+                <div class="arch-layer-card__detail">Dense + BatchNorm + ReLU &middot; Progressively upscales</div>
+                <p>The Generator transforms random noise through a series of layers that progressively increase dimensionality. Batch normalization stabilizes training. For images, transposed convolutions upsample spatial dimensions.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="g-output">
+                <div class="arch-layer-card__name">Generator Output (Fake Data)</div>
+                <div class="arch-layer-card__detail">tanh activation &middot; Same shape as real data</div>
+                <p>The Generator's output, shaped to match real data dimensions. tanh activation maps outputs to [-1, 1]. This fake data is fed to the Discriminator alongside real data for evaluation.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="d-hidden">
+                <div class="arch-layer-card__name">Discriminator Hidden Layers</div>
+                <div class="arch-layer-card__detail">Dense + LeakyReLU + Dropout</div>
+                <p>The Discriminator processes both real and fake data through feature extraction layers. LeakyReLU (instead of ReLU) prevents dead neurons. Dropout provides regularization. For images, strided convolutions downsample.</p>
+            </div>
+
+            <div class="arch-layer-card" data-layer="d-output">
+                <div class="arch-layer-card__name">Discriminator Output (Real/Fake)</div>
+                <div class="arch-layer-card__detail">Sigmoid &middot; P(real) in [0, 1]</div>
+                <p>A single output representing the probability that the input is real. Values near 1 mean "real", near 0 mean "fake". The Discriminator tries to output 1 for real data and 0 for generated data.</p>
+            </div>
+        </div>
+
+        <div class="arch-tab-content" id="tab-math">
+            <h2>Key Equations</h2>
+
+            <h3>Minimax Objective</h3>
+            <div class="arch-equation">
+                $$\min_G \max_D \; \mathbb{E}_{x \sim p_{data}}[\log D(x)] + \mathbb{E}_{z \sim p_z}[\log(1 - D(G(z)))]$$
+            </div>
+            <p>The Generator minimizes while the Discriminator maximizes. D tries to correctly classify real vs. fake; G tries to fool D.</p>
+
+            <h3>Discriminator Loss</h3>
+            <div class="arch-equation">
+                $$\mathcal{L}_D = -\mathbb{E}_{x \sim p_{data}}[\log D(x)] - \mathbb{E}_{z \sim p_z}[\log(1 - D(G(z)))]$$
+            </div>
+            <p>Maximize log-probability of correct classification for both real and fake data.</p>
+
+            <h3>Generator Loss</h3>
+            <div class="arch-equation">
+                $$\mathcal{L}_G = -\mathbb{E}_{z \sim p_z}[\log D(G(z))]$$
+            </div>
+            <p>In practice, we maximize log D(G(z)) instead of minimizing log(1 - D(G(z))) for better gradients early in training.</p>
+
+            <h3>Optimal Discriminator</h3>
+            <div class="arch-equation">
+                $$D^*(x) = \frac{p_{data}(x)}{p_{data}(x) + p_g(x)}$$
+            </div>
+            <p>At optimality, D outputs 0.5 everywhere, meaning G perfectly matches the data distribution.</p>
+
+            <h3>Nash Equilibrium</h3>
+            <div class="arch-equation">
+                $$p_g = p_{data} \implies D^*(x) = \frac{1}{2} \; \forall x$$
+            </div>
+        </div>
+
+        <div class="arch-tab-content" id="tab-code">
+            <h2>Implementation</h2>
+
+            <h3>PyTorch</h3>
+            <pre><code>import torch
+import torch.nn as nn
+
+class Generator(nn.Module):
+    def __init__(self, latent_dim=100, output_dim=784):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(latent_dim, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Linear(256, 512),
+            nn.BatchNorm1d(512),
+            nn.ReLU(),
+            nn.Linear(512, output_dim),
+            nn.Tanh(),
+        )
+
+    def forward(self, z):
+        return self.net(z)
+
+class Discriminator(nn.Module):
+    def __init__(self, input_dim=784):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(input_dim, 512),
+            nn.LeakyReLU(0.2),
+            nn.Dropout(0.3),
+            nn.Linear(512, 256),
+            nn.LeakyReLU(0.2),
+            nn.Dropout(0.3),
+            nn.Linear(256, 1),
+            nn.Sigmoid(),
+        )
+
+    def forward(self, x):
+        return self.net(x)
+
+# Training loop sketch
+G = Generator()
+D = Discriminator()
+criterion = nn.BCELoss()
+opt_G = torch.optim.Adam(G.parameters(), lr=0.0002)
+opt_D = torch.optim.Adam(D.parameters(), lr=0.0002)</code></pre>
+
+            <h3>TensorFlow / Keras</h3>
+            <pre><code>import tensorflow as tf
+from tensorflow import keras
+
+def build_generator(latent_dim=100):
+    return keras.Sequential([
+        keras.layers.Dense(256, input_shape=(latent_dim,)),
+        keras.layers.BatchNormalization(),
+        keras.layers.ReLU(),
+        keras.layers.Dense(512),
+        keras.layers.BatchNormalization(),
+        keras.layers.ReLU(),
+        keras.layers.Dense(784, activation='tanh'),
+    ])
+
+def build_discriminator():
+    return keras.Sequential([
+        keras.layers.Dense(512, input_shape=(784,)),
+        keras.layers.LeakyReLU(0.2),
+        keras.layers.Dropout(0.3),
+        keras.layers.Dense(256),
+        keras.layers.LeakyReLU(0.2),
+        keras.layers.Dropout(0.3),
+        keras.layers.Dense(1, activation='sigmoid'),
+    ])
+
+G = build_generator()
+D = build_discriminator()
+D.compile(optimizer='adam', loss='binary_crossentropy')</code></pre>
+
+            <h3>Training Loop (PyTorch)</h3>
+            <pre><code># Inside training loop:
+for real_data in dataloader:
+    batch_size = real_data.size(0)
+    real_labels = torch.ones(batch_size, 1)
+    fake_labels = torch.zeros(batch_size, 1)
+
+    # Train Discriminator
+    z = torch.randn(batch_size, 100)
+    fake_data = G(z).detach()
+    d_real = D(real_data)
+    d_fake = D(fake_data)
+    loss_D = criterion(d_real, real_labels) + criterion(d_fake, fake_labels)
+    opt_D.zero_grad()
+    loss_D.backward()
+    opt_D.step()
+
+    # Train Generator
+    z = torch.randn(batch_size, 100)
+    fake_data = G(z)
+    d_fake = D(fake_data)
+    loss_G = criterion(d_fake, real_labels)  # fool D
+    opt_G.zero_grad()
+    loss_G.backward()
+    opt_G.step()</code></pre>
+        </div>
+
+        <div class="arch-tab-content" id="tab-papers">
+            <h2>Key Papers</h2>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title"><a href="https://arxiv.org/abs/1406.2661" target="_blank" rel="noopener">Generative Adversarial Nets</a></div>
+                    <div class="arch-paper__authors">Goodfellow et al., 2014 &mdash; The original GAN paper introducing adversarial training</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title"><a href="https://arxiv.org/abs/1511.06434" target="_blank" rel="noopener">Unsupervised Representation Learning with Deep Convolutional GANs (DCGAN)</a></div>
+                    <div class="arch-paper__authors">Radford, Metz &amp; Chintala, 2015 &mdash; Architectural guidelines for stable convolutional GANs</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title"><a href="https://arxiv.org/abs/1701.07875" target="_blank" rel="noopener">Wasserstein GAN</a></div>
+                    <div class="arch-paper__authors">Arjovsky, Chintala &amp; Bottou, 2017 &mdash; Wasserstein distance for more stable GAN training</div>
+                </div>
+            </div>
+
+            <div class="arch-paper">
+                <svg class="arch-paper__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <div class="arch-paper__info">
+                    <div class="arch-paper__title"><a href="https://arxiv.org/abs/1812.04948" target="_blank" rel="noopener">A Style-Based Generator Architecture for GANs (StyleGAN)</a></div>
+                    <div class="arch-paper__authors">Karras, Laine &amp; Aila, 2018 &mdash; High-resolution face generation with style control</div>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 2rem;">Related Architectures</h2>
+            <ul>
+                <li><strong>VAE</strong> &mdash; Probabilistic generative model with explicit latent distribution</li>
+                <li><strong>Autoencoder</strong> &mdash; Learns compressed representations (encoder-decoder without adversary)</li>
+                <li><strong>Diffusion Models</strong> &mdash; Iterative denoising approach to generation</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer class="arch-footer">
+        <a href="https://malphons.github.io/app_ma_neuralnet_zoo/">&#8592; Back to Neural Network Zoo</a>
+    </footer>
+
+    <script src="js/data.js"></script>
+    <script src="js/diagram.js"></script>
+    <script>
+        (function() {
+            var html = document.documentElement;
+            var toggleBtn = document.querySelector('.theme-toggle');
+            var saved = localStorage.getItem('nnzoo_theme');
+            if (saved) html.setAttribute('data-theme', saved);
+            else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) html.setAttribute('data-theme', 'light');
+            if (toggleBtn) toggleBtn.addEventListener('click', function() {
+                var current = html.getAttribute('data-theme') || 'dark';
+                var next = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem('nnzoo_theme', next);
+            });
+        })();
+        (function() {
+            var tabs = document.querySelectorAll('.arch-tab-btn');
+            tabs.forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(function(t) { t.classList.remove('arch-tab-btn--active'); });
+                    tab.classList.add('arch-tab-btn--active');
+                    document.querySelectorAll('.arch-tab-content').forEach(function(c) { c.classList.remove('arch-tab-content--active'); });
+                    var target = document.getElementById('tab-' + tab.getAttribute('data-tab'));
+                    if (target) target.classList.add('arch-tab-content--active');
+                });
+            });
+        })();
+        NNZoo.diagram.init('#diagram-container');
+        document.getElementById('btn-animate').addEventListener('click', function() { NNZoo.diagram.animateDataFlow(); });
+        document.getElementById('btn-reset').addEventListener('click', function() { NNZoo.diagram.resetZoom(); });
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(document.body, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
+            }
+        });
+    </script>
+</body>
+</html>
