@@ -18,7 +18,7 @@
             "layer_types": ["input", "dense", "activation", "output"],
             "related_architectures": ["cnn", "autoencoder"],
             "last_updated": "2026-02-26",
-            "_repo_url": "https://malphons.github.io/nn-zoo-perceptron",
+            "_repo_url": "https://malphons.github.io/app_ma_neuralnet_zoo/nn-zoo-perceptron",
             "_repo_name": "nn-zoo-perceptron"
         },
         {
@@ -37,7 +37,7 @@
             "layer_types": ["conv2d", "maxpool", "dense", "relu", "softmax"],
             "related_architectures": ["resnet", "alexnet", "unet"],
             "last_updated": "2026-02-26",
-            "_repo_url": "https://malphons.github.io/nn-zoo-cnn",
+            "_repo_url": "https://malphons.github.io/app_ma_neuralnet_zoo/nn-zoo-cnn",
             "_repo_name": "nn-zoo-cnn"
         },
         {
@@ -56,7 +56,7 @@
             "layer_types": ["input", "recurrent", "dense", "output"],
             "related_architectures": ["lstm", "gru", "seq2seq"],
             "last_updated": "2026-02-26",
-            "_repo_url": "https://malphons.github.io/nn-zoo-rnn",
+            "_repo_url": "https://malphons.github.io/app_ma_neuralnet_zoo/nn-zoo-rnn",
             "_repo_name": "nn-zoo-rnn"
         },
         {
@@ -75,7 +75,7 @@
             "layer_types": ["input", "lstm-cell", "dense", "output"],
             "related_architectures": ["rnn", "gru", "seq2seq"],
             "last_updated": "2026-02-26",
-            "_repo_url": "https://malphons.github.io/nn-zoo-lstm",
+            "_repo_url": "https://malphons.github.io/app_ma_neuralnet_zoo/nn-zoo-lstm",
             "_repo_name": "nn-zoo-lstm"
         },
         {
@@ -94,7 +94,7 @@
             "layer_types": ["input", "encoder", "bottleneck", "decoder", "output"],
             "related_architectures": ["vae", "gan"],
             "last_updated": "2026-02-26",
-            "_repo_url": "https://malphons.github.io/nn-zoo-autoencoder",
+            "_repo_url": "https://malphons.github.io/app_ma_neuralnet_zoo/nn-zoo-autoencoder",
             "_repo_name": "nn-zoo-autoencoder"
         },
         {
@@ -113,7 +113,7 @@
             "layer_types": ["noise-input", "generator", "discriminator", "output"],
             "related_architectures": ["vae", "diffusion"],
             "last_updated": "2026-02-26",
-            "_repo_url": "https://malphons.github.io/nn-zoo-gan",
+            "_repo_url": "https://malphons.github.io/app_ma_neuralnet_zoo/nn-zoo-gan",
             "_repo_name": "nn-zoo-gan"
         },
         {
@@ -132,7 +132,7 @@
             "layer_types": ["embedding", "multi-head-attention", "feed-forward", "layer-norm", "softmax"],
             "related_architectures": ["bert", "gpt", "vit"],
             "last_updated": "2026-02-26",
-            "_repo_url": "https://malphons.github.io/nn-zoo-transformer",
+            "_repo_url": "https://malphons.github.io/app_ma_neuralnet_zoo/nn-zoo-transformer",
             "_repo_name": "nn-zoo-transformer"
         },
         {
@@ -151,7 +151,7 @@
             "layer_types": ["conv2d", "batch-norm", "relu", "skip-connection", "global-avg-pool", "dense"],
             "related_architectures": ["cnn", "alexnet", "unet"],
             "last_updated": "2026-02-26",
-            "_repo_url": "https://malphons.github.io/nn-zoo-resnet",
+            "_repo_url": "https://malphons.github.io/app_ma_neuralnet_zoo/nn-zoo-resnet",
             "_repo_name": "nn-zoo-resnet"
         }
     ]

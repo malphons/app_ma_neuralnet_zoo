@@ -1,6 +1,6 @@
 {
     "schema_version": "1.0",
-    "base_url_pattern": "https://malphons.github.io/{repo_name}",
+    "base_url_pattern": "https://malphons.github.io/app_ma_neuralnet_zoo/{repo_name}",
     "architectures": [
         {
             "id": "perceptron",
